@@ -1,8 +1,8 @@
-export default class AboutPage {
+export default class UploadStoryPage {
   async render() {
     return `
       <section class="container">
-        <h1>About Page</h1>
+        <h1>Upload Storymu</h1>
       </section>
     `;
   }
