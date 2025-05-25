@@ -1,0 +1,10 @@
+.container {
+  padding-inline: 32px;
+  margin-inline: auto;
+  max-width: 1300px;
+}
+
+/* Main content layout */
+.main-content {
+  padding-block: 20px;
+}

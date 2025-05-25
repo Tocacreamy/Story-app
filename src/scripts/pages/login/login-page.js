@@ -1,6 +1,6 @@
 import { login } from "../../data/api.js";
 
-export default class Login {
+export default class LoginPage {
   async render() {
     return `
       <section class="container login-container">
@@ -15,7 +15,10 @@ export default class Login {
             
             <div class="form-group">
               <label for="password">Password</label>
-              <input type="password" id="password" name="password" placeholder="Enter your password" required>
+              <div class="password-input-container">
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <button type="button" id="toggle-password" class="toggle-password">Show</button>
+              </div>
             </div>
             
             <div class="form-group">
@@ -39,24 +42,45 @@ export default class Login {
     loginForm.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      // Get form values
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
 
-      // Basic validation
       if (!email || !password) {
         this._showMessage("Please fill in all fields", "error");
         return;
       }
 
       try {
-        // Call login API
+        this._showMessage("Logging in...", "info"); 
         await login(email, password);
+        this._showMessage("Login successful!", "success");
 
-        alert("LOGIN BERHASIl event");
+        setTimeout(() => {
+          window.location.hash = "#/";
+        }, 1500);
       } catch (error) {
         this._showMessage(error.message || "Login failed", "error");
       }
     });
+
+    const togglePasswordButton = document.getElementById("toggle-password");
+    const passwordInput = document.getElementById("password");
+
+    togglePasswordButton.addEventListener("click", () => {
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        togglePasswordButton.textContent = "Hide";
+      } else {
+        passwordInput.type = "password";
+        togglePasswordButton.textContent = "Show";
+      }
+    });
+  }
+
+  _showMessage(text, type) {
+    const messageEl = document.getElementById("message");
+    messageEl.textContent = text;
+    messageEl.className = "message";
+    messageEl.classList.add(type);
   }
 }

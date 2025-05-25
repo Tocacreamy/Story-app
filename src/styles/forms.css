@@ -1,0 +1,291 @@
+/* Form container with glass effect */
+.form-container {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--card-radius);
+  padding: 30px;
+  max-width: 500px;
+  margin: 40px auto;
+  box-shadow: var(--box-shadow);
+}
+
+/* Login and register specific styling */
+.login-container,
+.register-container {
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.login-card,
+.register-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--card-radius);
+  padding: 35px;
+  max-width: 450px;
+  margin: 0 auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.login-title,
+.register-title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 1.8rem;
+  background: linear-gradient(
+    90deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Form styling */
+.form-group {
+  margin-bottom: 22px;
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: white;
+  font-size: 0.95rem;
+}
+
+.form-group input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 12px 15px;
+  color: white;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Password input container */
+.password-input-container {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 5px;
+  transition: color 0.2s;
+}
+
+.toggle-password:hover {
+  color: var(--primary-color);
+}
+
+.password-requirements {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+
+/* Form buttons */
+.login-button,
+.register-button {
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary-color), #9061c2);
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(187, 134, 252, 0.3);
+}
+
+.login-button:hover,
+.register-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(187, 134, 252, 0.5);
+}
+
+.login-button:active,
+.register-button:active {
+  transform: translateY(-1px);
+}
+
+/* Message styles */
+.message {
+  padding: 12px 15px;
+  margin-top: 20px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.message.error {
+  background: rgba(207, 102, 121, 0.15);
+  border-left: 3px solid var(--error-color);
+  color: #ff9ea9;
+}
+
+.message.success {
+  background: rgba(3, 218, 198, 0.15);
+  border-left: 3px solid var(--success-color);
+  color: #5effe7;
+}
+
+.message.info {
+  background: rgba(187, 134, 252, 0.15);
+  border-left: 3px solid var(--primary-color);
+  color: #d9bdff;
+}
+
+/* Register/Login links */
+.register-link,
+.login-link {
+  text-align: center;
+  margin-top: 25px;
+  color: var(--text-muted);
+  padding-top: 20px;
+  border-top: 1px solid var(--glass-border);
+}
+
+.register-link a,
+.login-link a {
+  color: var(--primary-color);
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.register-link a:hover,
+.login-link a:hover {
+  color: var(--secondary-color);
+  text-decoration: underline;
+}
+
+/* Upload story form styling */
+#upload-container {
+  margin-top: 20px;
+}
+
+textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 12px 15px;
+  color: white;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.file-input-container {
+  position: relative;
+}
+
+input[type="file"] {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 12px 15px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+  background: rgba(187, 134, 252, 0.2);
+  border: 1px solid var(--primary-color);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 6px;
+  margin-right: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background: rgba(187, 134, 252, 0.3);
+}
+
+.file-preview-container {
+  margin-top: 15px;
+  text-align: center;
+}
+
+#image-preview {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 6px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.upload-button {
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary-color), #9061c2);
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(187, 134, 252, 0.3);
+}
+
+.upload-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(187, 134, 252, 0.5);
+}
+
+.upload-button:disabled {
+  background: #666;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.7;
+}

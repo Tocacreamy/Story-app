@@ -1,0 +1,121 @@
+/* Header with glassmorphism */
+header {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.main-header {
+  min-height: 70px;
+  padding-block: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: white;
+  letter-spacing: 1px;
+}
+
+/* Navigation Drawer with glass effect */
+.navigation-drawer {
+  min-height: 100vh;
+  width: 250px;
+  padding: 20px 15px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-right: 1px solid var(--glass-border);
+
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+
+  transform: translateX(-100%);
+  transition: transform 350ms;
+  z-index: 9999;
+}
+
+.navigation-drawer.open {
+  transform: translateX(0);
+}
+
+.drawer-button {
+  padding: 8px;
+  border: 0;
+  border-radius: 50%;
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-weight: bold;
+  font-size: 24px;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-speed);
+}
+
+.drawer-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.nav-list li a {
+  padding: 10px 15px;
+  display: block;
+  color: var(--text-color);
+  border-radius: 6px;
+  transition: all var(--transition-speed);
+}
+
+.nav-list li a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Button styles */
+.btn {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all var(--transition-speed);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color), #9061c2);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #9061c2, var(--primary-color));
+}

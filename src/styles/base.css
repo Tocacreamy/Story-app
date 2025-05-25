@@ -1,0 +1,75 @@
+:root {
+  --glass-bg: rgba(18, 18, 20, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --primary-color: #bb86fc; /* Purple accent */
+  --secondary-color: #03dac6; /* Teal accent */
+  --accent-color: #cf6679; /* Pink accent */
+  --text-color: #e0e0e0; /* Light text */
+  --text-muted: #9e9e9e; /* Muted text */
+  --background-dark: #121212; /* Dark background */
+  --background-darker: #000000; /* Pure black for contrast */
+  --error-color: #cf6679; /* Error red */
+  --success-color: #03dac6; /* Success teal */
+  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --card-radius: 12px;
+  --transition-speed: 0.3s;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  color: var(--text-color);
+  background: linear-gradient(135deg, #121212 0%, #000000 100%);
+  background-attachment: fixed;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* Enhanced Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-bottom: 0.5em;
+  font-weight: 500;
+  line-height: 1.3;
+  color: white;
+}
+
+h1 {
+  font-size: 2.25rem;
+  background: linear-gradient(
+    90deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 1rem;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+/* Links */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: all var(--transition-speed) ease;
+}
+
+a:hover {
+  color: var(--secondary-color);
+  text-decoration: none;
+}
+
+
