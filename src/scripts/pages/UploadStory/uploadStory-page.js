@@ -1,10 +1,12 @@
 import { addNewStory } from "../../data/api.js";
 import CameraHandler from "../../utils/camera.js";
 import FileHandler from "../../utils/fileHandler.js";
+import MapHandler from "../../utils/mapHandler.js";
 
 export default class UploadStoryPage {
   constructor() {
     this.cameraHandler = new CameraHandler();
+    this.mapHandler = new MapHandler();
   }
 
   async render() {
@@ -39,6 +41,22 @@ export default class UploadStoryPage {
             </div>
             
             <div class="form-group">
+              <label for="location">Add Location</label>
+              <div class="location-input-container">
+                <div class="location-buttons">
+                  <button type="button" id="get-location" class="location-button">Get My Location</button>
+                  <button type="button" id="reset-location" class="location-button reset-location">Reset Location</button>
+                </div>
+                <div id="location-status" class="location-status">No location selected</div>
+                <div id="map-section" class="map-section">
+                  <div id="location-map" class="location-map"></div>
+                </div>
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
+              </div>
+            </div>
+            
+            <div class="form-group">
               <button type="submit" class="upload-button">Upload Story</button>
             </div>
             
@@ -56,6 +74,13 @@ export default class UploadStoryPage {
     const photoInput = document.getElementById("photo");
     const imagePreview = document.getElementById("image-preview");
 
+    // Location elements
+    const getLocationButton = document.getElementById("get-location");
+    const resetLocationButton = document.getElementById("reset-location");
+    const locationStatus = document.getElementById("location-status");
+    const latitudeInput = document.getElementById("latitude");
+    const longitudeInput = document.getElementById("longitude");
+
     // Camera elements
     const cameraButton = document.getElementById("camera-button");
     const cameraContainer = document.getElementById("camera-container");
@@ -69,20 +94,39 @@ export default class UploadStoryPage {
     // Check authentication
     this._setupAuthentication(authStatus, uploadContainer);
 
-    // Handle image preview for file input
-    this._setupFilePreview(photoInput, imagePreview);
+    if (localStorage.getItem("token")) {
+      // Initialize map if authenticated
+      await this._initializeMap();
 
-    // Setup camera functionality
-    this._setupCameraControls(
-      cameraButton,
-      closeCamera,
-      captureButton,
-      photoInput,
-      imagePreview
-    );
+      // Handle image preview for file input
+      this._setupFilePreview(photoInput, imagePreview);
 
-    // Handle form submission
-    this._setupFormSubmission(uploadForm, photoInput);
+      // Setup camera functionality
+      this._setupCameraControls(
+        cameraButton,
+        closeCamera,
+        captureButton,
+        photoInput,
+        imagePreview
+      );
+
+      // Setup location controls
+      this._setupLocationControls(
+        getLocationButton,
+        resetLocationButton,
+        locationStatus,
+        latitudeInput,
+        longitudeInput
+      );
+
+      // Handle form submission
+      this._setupFormSubmission(
+        uploadForm,
+        photoInput,
+        latitudeInput,
+        longitudeInput
+      );
+    }
   }
 
   _setupAuthentication(authStatus, uploadContainer) {
@@ -108,6 +152,20 @@ export default class UploadStoryPage {
         <p>Welcome, ${userName || "User"}! Share your story below.</p>
       </div>
     `;
+  }
+
+  async _initializeMap() {
+    try {
+      // Initialize the map
+      const result = await this.mapHandler.init("location-map");
+
+      if (!result.success) {
+        this._showMessage(`Error initializing map: ${result.error}`, "error");
+      }
+    } catch (error) {
+      this._showMessage(`Failed to load map: ${error.message}`, "error");
+      console.error("Map initialization error:", error);
+    }
   }
 
   _setupFilePreview(photoInput, imagePreview) {
@@ -176,13 +234,80 @@ export default class UploadStoryPage {
     });
   }
 
-  _setupFormSubmission(uploadForm, photoInput) {
+  _setupLocationControls(
+    getLocationButton,
+    resetLocationButton,
+    locationStatus,
+    latitudeInput,
+    longitudeInput
+  ) {
+    // Get user location
+    getLocationButton.addEventListener("click", async () => {
+      this._showMessage("Getting your location...", "info");
+
+      const result = await this.mapHandler.getUserLocation();
+
+      if (result.success) {
+        // Update hidden inputs
+        latitudeInput.value = result.latitude;
+        longitudeInput.value = result.longitude;
+
+        // Update status
+        locationStatus.textContent = `Location set: ${result.latitude.toFixed(
+          6
+        )}, ${result.longitude.toFixed(6)}`;
+        locationStatus.classList.add("location-set");
+
+        this._showMessage("Location detected successfully!", "success");
+      } else {
+        this._showMessage(result.error, "error");
+      }
+    });
+
+    // Reset location
+    resetLocationButton.addEventListener("click", () => {
+      // Clear marker
+      this.mapHandler.clearMarker();
+
+      // Reset view
+      this.mapHandler.resetView();
+
+      // Clear inputs
+      latitudeInput.value = "";
+      longitudeInput.value = "";
+
+      // Reset status
+      locationStatus.textContent = "No location selected";
+      locationStatus.classList.remove("location-set");
+
+      this._showMessage("Location has been reset", "info");
+    });
+
+    // Update form values when map is clicked
+    this.mapHandler.map?.on("click", (e) => {
+      const { lat, lng } = e.latlng;
+
+      // Update hidden inputs
+      latitudeInput.value = lat;
+      longitudeInput.value = lng;
+
+      // Update status
+      locationStatus.textContent = `Location set: ${lat.toFixed(
+        6
+      )}, ${lng.toFixed(6)}`;
+      locationStatus.classList.add("location-set");
+    });
+  }
+
+  _setupFormSubmission(uploadForm, photoInput, latitudeInput, longitudeInput) {
     uploadForm.addEventListener("submit", async (event) => {
       event.preventDefault();
 
       // Get form values
       const description = document.getElementById("description").value.trim();
       const photoFile = photoInput.files[0];
+      const latitude = latitudeInput.value || null;
+      const longitude = longitudeInput.value || null;
 
       // Validate inputs
       if (!description) {
@@ -198,14 +323,17 @@ export default class UploadStoryPage {
       try {
         this._showMessage("Uploading your story...", "info");
 
+
         // Disable form while submitting
         const submitButton = uploadForm.querySelector('button[type="submit"]');
-        const formInputs = uploadForm.querySelectorAll("input, textarea");
+        const formInputs = uploadForm.querySelectorAll(
+          "input, textarea, button"
+        );
         submitButton.disabled = true;
         formInputs.forEach((input) => (input.disabled = true));
 
-        // Send to API
-        await addNewStory(description, photoFile);
+        // Send to API with location if available
+        await addNewStory(description, photoFile, latitude, longitude);
 
         this._showMessage(
           "Your story has been uploaded successfully!",
@@ -215,6 +343,16 @@ export default class UploadStoryPage {
         // Reset the form after success
         uploadForm.reset();
         document.getElementById("image-preview").style.display = "none";
+
+        // Reset location
+        if (this.mapHandler) {
+          this.mapHandler.clearMarker();
+          document.getElementById("location-status").textContent =
+            "No location selected";
+          document
+            .getElementById("location-status")
+            .classList.remove("location-set");
+        }
 
         // Redirect to home page
         setTimeout(() => {

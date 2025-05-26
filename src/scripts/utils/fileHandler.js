@@ -9,9 +9,10 @@ export default class FileHandler {
    * @returns {File} - A File object
    */
   static createFileFromBlob(blob, filename) {
+    const mimeType = blob.type || 'image/jpeg';
     return new File([blob], filename, {
-      type: blob.type,
-      lastModified: new Date().getTime(),
+      type: mimeType,
+      lastModified: new Date().getTime()
     });
   }
 

@@ -92,7 +92,7 @@ export const getAllStories = async () => {
   }
 };
 
-export const addNewStory = async (description, photo) => {
+export const addNewStory = async (description, photo ,lat = null, lon = null) => {
   try {
     const token = localStorage.getItem("token");
 
@@ -103,6 +103,11 @@ export const addNewStory = async (description, photo) => {
     const formData = new FormData();
     formData.append("description", description);
     formData.append("photo", photo);
+
+    if (lat !== null && lon !== null) {
+      formData.append("lat", lat);
+      formData.append("lon", lon);
+    }
 
     const response = await fetch(ENDPOINTS.ADDNEWSTORY, {
       method: `POST`,

@@ -1,6 +1,3 @@
-/**
- * Camera utility module for handling camera operations
- */
 export default class CameraHandler {
   constructor() {
     this.stream = null;
@@ -74,20 +71,36 @@ export default class CameraHandler {
     // Convert to data URL
     const imageDataUrl = canvas.toDataURL("image/jpeg");
 
+    const blob = this._dataURLtoBlob(imageDataUrl);
+
     return {
       success: true,
       imageDataUrl,
-      blob: this._dataURLtoBlob(imageDataUrl),
+      blob,
     };
   }
 
   /**
    * Convert data URL to Blob
    * @param {string} dataUrl - The data URL to convert
-   * @returns {Promise<Blob>} - A promise that resolves to a Blob
+   * @returns {Blob} - A promise that resolves to a Blob
    */
-  async _dataURLtoBlob(dataUrl) {
-    const res = await fetch(dataUrl);
-    return await res.blob();
+  _dataURLtoBlob(dataUrl) {
+    // Split the data URL to get the content type and base64 data
+    const parts = dataUrl.split(';base64,');
+    const contentType = parts[0].split(':')[1];
+    const raw = window.atob(parts[1]);
+    const rawLength = raw.length;
+    
+    // Create an array buffer of the right size
+    const uInt8Array = new Uint8Array(rawLength);
+    
+    // Fill the array with the binary data
+    for (let i = 0; i < rawLength; ++i) {
+      uInt8Array[i] = raw.charCodeAt(i);
+    }
+    
+    // Create a blob with the correct MIME type
+    return new Blob([uInt8Array], { type: contentType });
   }
 }

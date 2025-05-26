@@ -1,0 +1,109 @@
+/* Map styles for story upload */
+.map-section {
+  margin-top: 15px;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  position: relative;
+}
+
+.location-map {
+  height: 300px;
+  width: 100%;
+  border-radius: var(--card-radius);
+  z-index: 1;
+  margin-top: 10px;
+}
+
+.location-input-container {
+  margin-top: 10px;
+}
+
+.location-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.location-button {
+  flex: 1;
+  background: linear-gradient(135deg, #03dac6, #018786);
+  color: white;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(3, 218, 198, 0.2);
+}
+
+.location-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(3, 218, 198, 0.4);
+}
+
+.location-status {
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.location-status.location-set {
+  background: rgba(3, 218, 198, 0.1);
+  border-left: 3px solid var(--success-color);
+  color: var(--success-color);
+}
+
+.reset-location {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+}
+
+.marker-tooltip {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 4px;
+  padding: 3px 8px;
+  color: white;
+  font-size: 12px;
+}
+
+/* Custom marker pin */
+.custom-marker-pin {
+  background-color: var(--primary-color);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+.custom-marker-pin::after {
+  content: "";
+  width: 14px;
+  height: 14px;
+  background: white;
+  border-radius: 50%;
+}
+
+/* Leaflet control styling */
+.leaflet-control-attribution {
+  background: rgba(0, 0, 0, 0.6) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.leaflet-control-attribution a {
+  color: var(--secondary-color) !important;
+}
+
+.leaflet-control-zoom a {
+  background-color: var(--glass-bg) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: white !important;
+}
