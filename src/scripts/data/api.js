@@ -5,6 +5,7 @@ const ENDPOINTS = {
   REGISTER: `${CONFIG.BASE_URL}/register`,
   GETALLSTORIES: `${CONFIG.BASE_URL}/stories`,
   ADDNEWSTORY: `${CONFIG.BASE_URL}/stories`,
+  DETAILSTORY: `${CONFIG.BASE_URL}/stories`,
 };
 
 export const register = async (name, email, password) => {
@@ -92,7 +93,12 @@ export const getAllStories = async () => {
   }
 };
 
-export const addNewStory = async (description, photo ,lat = null, lon = null) => {
+export const addNewStory = async (
+  description,
+  photo,
+  lat = null,
+  lon = null
+) => {
   try {
     const token = localStorage.getItem("token");
 
@@ -126,5 +132,33 @@ export const addNewStory = async (description, photo ,lat = null, lon = null) =>
   } catch (error) {
     console.error("Error adding new story:", error);
     throw error;
+  }
+};
+
+export const detailStory = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      throw new Error("You must be logged in to see story details");
+    }
+
+    const response = await fetch(`${ENDPOINTS.DETAILSTORY}/${id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok){
+      throw new Error(data.message||"Failed to fetch story details");
+      
+    }
+
+    return data;
+  } catch (error) {
+    throw new Error("Error detail Story: ", error);
   }
 };
