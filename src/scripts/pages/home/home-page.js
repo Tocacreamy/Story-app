@@ -62,12 +62,15 @@ export default class HomePage {
       storiesContainer.innerHTML = stories
         .map(
           (story) => `
-        <div class="story-card">
-          <img src="${story.photoUrl}" alt="${story.name}'s story" class="story-image">
+        <div class="story-card" style="view-transition-name: story-card-${story.id}">
+          <img src="${story.photoUrl}" 
+               alt="Story image uploaded by ${story.name}" 
+               class="story-image"
+               style="view-transition-name: story-image-${story.id}">
           <div class="story-content">
-            <h3>${story.name}</h3>
+            <h3 style="view-transition-name: story-title-${story.id}">${story.name}</h3>
             <p class="story-desc">${story.description}</p>
-            <a href="#/detail/${story.id}" class="read-more">Read More</a>
+            <a href="#/detail/${story.id}" class="read-more" aria-label="Read more about ${story.name}'s story">Read More</a>
           </div>
         </div>
       `

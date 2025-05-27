@@ -16,7 +16,11 @@ class App {
 
   #setupDrawer() {
     this.#drawerButton.addEventListener("click", () => {
-      this.#navigationDrawer.classList.toggle("open");
+      const isOpen = this.#navigationDrawer.classList.toggle("open");
+      this.#drawerButton.setAttribute(
+        "aria-expanded",
+        isOpen ? "true" : "false"
+      );
     });
 
     document.body.addEventListener("click", (event) => {
@@ -38,8 +42,49 @@ class App {
   async renderPage() {
     const url = getActiveRoute();
     const page = routes[url];
-    this.#content.innerHTML = await page.render();
-    await page.afterRender();
+
+    // Check if View Transitions API is supported
+    if (
+      document.startViewTransition &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      // Use View Transitions API
+      const transition = document.startViewTransition(async () => {
+        // Render the new page content
+        this.#content.innerHTML = await page.render();
+        await page.afterRender();
+
+        // Set focus to the main content area
+        this.#content.focus();
+
+        // Announce page change for screen readers
+        this.#announcePageChange();
+      });
+
+      // Wait for the transition to finish
+      await transition.finished;
+    } else {
+      // Fallback for browsers that don't support View Transitions API
+      this.#content.innerHTML = await page.render();
+      await page.afterRender();
+      this.#content.focus();
+      this.#announcePageChange();
+    }
+  }
+
+  #announcePageChange() {
+    const pageTitle = this.#content.querySelector("h1");
+    if (pageTitle) {
+      const announcer = document.createElement("div");
+      announcer.setAttribute("aria-live", "assertive");
+      announcer.classList.add("visually-hidden");
+      announcer.textContent = `Navigated to ${pageTitle.textContent}`;
+      document.body.appendChild(announcer);
+
+      setTimeout(() => {
+        document.body.removeChild(announcer);
+      }, 1000);
+    }
   }
 }
 

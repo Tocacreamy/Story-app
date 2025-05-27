@@ -22,7 +22,7 @@ export default class Register {
               <label for="password">Password</label>
               <div class="password-input-container">
                 <input type="password" id="password" name="password" placeholder="Create a password" required minlength="8">
-                <button type="button" id="toggle-password" class="toggle-password">Show</button>
+                <button type="button" id="toggle-password" class="toggle-password"><img src="public/images/visible.svg" alt="show icon"></button>
               </div>
               <small class="password-requirements">Minimum 8 characters</small>
             </div>
@@ -111,13 +111,17 @@ export default class Register {
     const togglePasswordButton = document.getElementById("toggle-password");
     const passwordInput = document.getElementById("password");
 
+    togglePasswordButton.setAttribute("aria-label", "Show password");
+
     togglePasswordButton.addEventListener("click", () => {
       if (passwordInput.type === "password") {
         passwordInput.type = "text";
-        togglePasswordButton.textContent = "Hide";
+        togglePasswordButton.innerHTML = `<img src="public/images/visible_off.svg" alt="show icon">`;
+        togglePasswordButton.setAttribute("aria-label", "Hide password");
       } else {
         passwordInput.type = "password";
-        togglePasswordButton.textContent = "Show";
+        togglePasswordButton.innerHTML =`<img src="public/images/visible.svg" alt="show icon">`;
+        togglePasswordButton.setAttribute("aria-label", "Show password");
       }
     });
   }

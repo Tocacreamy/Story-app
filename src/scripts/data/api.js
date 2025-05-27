@@ -6,6 +6,7 @@ const ENDPOINTS = {
   GETALLSTORIES: `${CONFIG.BASE_URL}/stories`,
   ADDNEWSTORY: `${CONFIG.BASE_URL}/stories`,
   DETAILSTORY: `${CONFIG.BASE_URL}/stories`,
+  ADDNEWSTORYGUESS: `${CONFIG.BASE_URL}/stories/guest`,
 };
 
 export const register = async (name, email, password) => {
@@ -152,13 +153,45 @@ export const detailStory = async (id) => {
 
     const data = await response.json();
 
-    if (!response.ok){
-      throw new Error(data.message||"Failed to fetch story details");
-      
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to fetch story details");
     }
 
     return data;
   } catch (error) {
     throw new Error("Error detail Story: ", error);
+  }
+};
+
+export const addNewStoriesWithGuestAccount = async (
+  description,
+  photo,
+  lat = null,
+  lon = null
+) => {
+  try {
+    const formData = new FormData();
+    formData.append("description", description);
+    formData.append("photo", photo);
+
+    if (lat !== null && lon !== null) {
+      formData.append("lat", lat);
+      formData.append("lon", lon);
+    }
+
+    const response = await fetch(ENDPOINTS.ADDNEWSTORYGUESS, {
+      method: "POST",
+      body: formData,
+    });
+    if (!response.ok) {
+      throw new Error(data.message || "Error uploading guest story");
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Guest upload error:", error);
+    throw error;
   }
 };

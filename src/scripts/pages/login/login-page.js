@@ -17,7 +17,7 @@ export default class LoginPage {
               <label for="password">Password</label>
               <div class="password-input-container">
                 <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                <button type="button" id="toggle-password" class="toggle-password">Show</button>
+                <button type="button" id="toggle-password" class="toggle-password"><img src="public/images/visible.svg" alt="show icon"></button>
               </div>
             </div>
             
@@ -51,7 +51,7 @@ export default class LoginPage {
       }
 
       try {
-        this._showMessage("Logging in...", "info"); 
+        this._showMessage("Logging in...", "info");
         await login(email, password);
         this._showMessage("Login successful!", "success");
 
@@ -66,13 +66,17 @@ export default class LoginPage {
     const togglePasswordButton = document.getElementById("toggle-password");
     const passwordInput = document.getElementById("password");
 
+    togglePasswordButton.setAttribute("aria-label", "Show password");
+
     togglePasswordButton.addEventListener("click", () => {
       if (passwordInput.type === "password") {
         passwordInput.type = "text";
-        togglePasswordButton.textContent = "Hide";
+        togglePasswordButton.innerHTML = `<img src="public/images/visible_off.svg" alt="show icon">`;
+        togglePasswordButton.setAttribute("aria-label", "Hide password");
       } else {
         passwordInput.type = "password";
-        togglePasswordButton.textContent = "Show";
+        togglePasswordButton.innerHTML = `<img src="public/images/visible.svg" alt="show icon">`;
+        togglePasswordButton.setAttribute("aria-label", "Show password");
       }
     });
   }

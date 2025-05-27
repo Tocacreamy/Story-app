@@ -1,4 +1,4 @@
-import { addNewStory } from "../../data/api.js";
+import { addNewStory, addNewStoriesWithGuestAccount } from "../../data/api.js";
 import CameraHandler from "../../utils/camera.js";
 import FileHandler from "../../utils/fileHandler.js";
 import MapHandler from "../../utils/mapHandler.js";
@@ -16,7 +16,9 @@ export default class UploadStoryPage {
         <div id="auth-status"></div>
         
         <div id="upload-container" class="form-container">
-          <form id="upload-form">
+          <form id="upload-form" aria-labelledby="upload-form-title">
+            <h2 id="upload-form-title" class="visually-hidden">Story Upload Form</h2>
+            
             <div class="form-group">
               <label for="description">Story Description</label>
               <textarea id="description" name="description" rows="5" placeholder="Write your story here..." required></textarea>
@@ -60,7 +62,7 @@ export default class UploadStoryPage {
               <button type="submit" class="upload-button">Upload Story</button>
             </div>
             
-            <div id="message" class="message"></div>
+            <div id="message" class="message" aria-live="assertive"></div>
           </form>
         </div>
       </section>
@@ -322,7 +324,6 @@ export default class UploadStoryPage {
 
       try {
         this._showMessage("Uploading your story...", "info");
-
 
         // Disable form while submitting
         const submitButton = uploadForm.querySelector('button[type="submit"]');
