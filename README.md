@@ -34,7 +34,7 @@ Story App is a modern web application that allows users to share their stories w
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/story-app.git
+   git clone https://github.com/Tocacreamy/story-app.git
    cd story-app
    ```
 
@@ -52,26 +52,7 @@ Story App is a modern web application that allows users to share their stories w
 
 4. Open your browser and visit: `http://localhost:5173`
 
-## 🏗️ Project Structure
 
-```
-story-app/
-├── public/               # Static files
-├── src/                  # Source files
-│   ├── assets/           # Images, fonts, etc.
-│   ├── components/       # React components
-│   ├── pages/            # Page components
-│   ├── styles/           # CSS/SCSS files
-│   ├── utils/            # Utility functions
-│   ├── App.jsx           # Root component
-│   └── main.jsx          # Entry point
-├── .eslintrc.js          # ESLint configuration
-├── .gitignore            # Git ignore rules
-├── index.html            # HTML template
-├── package.json          # Project dependencies and scripts
-├── vite.config.js        # Vite configuration
-└── README.md             # Project documentation
-```
 
 ## 🤝 Contributing
 
@@ -90,7 +71,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgements
 
 - [Vite](https://vitejs.dev/)
-- [React](https://reactjs.org/)
 - [DBS Foundation](https://www.dbs.com/dbsfoundation/)
 
 ---
