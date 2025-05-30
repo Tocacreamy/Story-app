@@ -1,90 +1,24 @@
-import { login } from "../../data/api.js";
+import LoginView from "../../views/LoginView.js";
+import LoginPresenter from "../../presenters/LoginPresenter.js";
+import UserModel from "../../models/UserModel.js";
 
 export default class LoginPage {
+  constructor() {
+    this.view = new LoginView();
+    this.model = new UserModel();
+    this.presenter = null; // Will be initialized in afterRender
+  }
+
   async render() {
-    return `
-      <section class="container login-container">
-        <div class="login-card">
-          <h1 class="login-title">Login to Your Account</h1>
-          
-          <form id="login-form">
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" placeholder="Enter your email" required>
-            </div>
-            
-            <div class="form-group">
-              <label for="password">Password</label>
-              <div class="password-input-container">
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                <button type="button" id="toggle-password" class="toggle-password"><img src="public/images/visible.svg" alt="show icon"></button>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <button type="submit" class="login-button">Login</button>
-            </div>
-            
-            <div id="message" class="message"></div>
-          </form>
-          
-          <div class="register-link">
-            <p>Don't have an account? <a href="#/register">Register here</a></p>
-          </div>
-        </div>
-      </section>
-      `;
+    return this.view.getTemplate();
   }
 
   async afterRender() {
-    const loginForm = document.getElementById("login-form");
-
-    loginForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      if (!email || !password) {
-        this._showMessage("Please fill in all fields", "error");
-        return;
-      }
-
-      try {
-        this._showMessage("Logging in...", "info");
-        await login(email, password);
-        this._showMessage("Login successful!", "success");
-
-        setTimeout(() => {
-          window.location.hash = "#/";
-        }, 1500);
-      } catch (error) {
-        this._showMessage(error.message || "Login failed", "error");
-      }
+    // Initialize the presenter with the view and model
+    this.presenter = new LoginPresenter(this.view, this.model, {
+      navigateTo: (url) => {
+        window.location.hash = url;
+      },
     });
-
-    const togglePasswordButton = document.getElementById("toggle-password");
-    const passwordInput = document.getElementById("password");
-
-    togglePasswordButton.setAttribute("aria-label", "Show password");
-
-    togglePasswordButton.addEventListener("click", () => {
-      if (passwordInput.type === "password") {
-        passwordInput.type = "text";
-        togglePasswordButton.innerHTML = `<img src="public/images/visible_off.svg" alt="show icon">`;
-        togglePasswordButton.setAttribute("aria-label", "Hide password");
-      } else {
-        passwordInput.type = "password";
-        togglePasswordButton.innerHTML = `<img src="public/images/visible.svg" alt="show icon">`;
-        togglePasswordButton.setAttribute("aria-label", "Show password");
-      }
-    });
-  }
-
-  _showMessage(text, type) {
-    const messageEl = document.getElementById("message");
-    messageEl.textContent = text;
-    messageEl.className = "message";
-    messageEl.classList.add(type);
   }
 }

@@ -2,13 +2,35 @@
   position: absolute;
   top: -40px;
   left: 0;
-  background-color: #333;
-  color: white;
-  padding: 8px;
-  z-index: 100;
+  background-color: var(--primary-color);
+  color: black;
+  font-weight: 600;
+  padding: 8px 16px;
+  z-index: 10000;
   transition: top 0.3s;
 }
 
 .skip-link:focus {
   top: 0;
+}
+
+/* Focus styles for better keyboard navigation */
+:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* High contrast focus for interactive elements */
+button:focus,
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
 }
