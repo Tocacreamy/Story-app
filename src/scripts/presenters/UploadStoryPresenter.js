@@ -57,15 +57,11 @@ class UploadStoryPresenter {
         return false;
       }
 
-      // Setup map click handler
+      // Setup map click handler through view
       this.mapHandler.map.on("click", (e) => {
         const { lat, lng } = e.latlng;
-
-        // Update hidden inputs
-        document.getElementById("latitude").value = lat;
-        document.getElementById("longitude").value = lng;
-
-        // Update view
+        // Use view methods instead of direct DOM access
+        this.view.setLocationCoordinates(lat, lng);
         this.view.updateLocationStatus(lat, lng);
         this.view.showMessage("Location selected from map", "info");
       });
@@ -103,15 +99,14 @@ class UploadStoryPresenter {
       // Update image preview in view
       this.view.updateImagePreview(captureResult.imageDataUrl);
 
-      // Create a File object and update the file input
+      // Create a File object and update the file input through view
       const photoFile = await FileHandler.createFileFromBlob(
         captureResult.blob,
         "camera-photo.jpg"
       );
 
-      // Update the file input with the captured photo
-      const photoInput = document.getElementById("photo");
-      FileHandler.updateFileInput(photoInput, photoFile);
+      // Use view method instead of direct DOM access
+      this.view.updatePhotoInput(photoFile);
 
       // Close camera
       this.cameraHandler.closeCamera();
@@ -124,11 +119,8 @@ class UploadStoryPresenter {
     const result = await this.mapHandler.getUserLocation();
 
     if (result.success) {
-      // Update hidden inputs
-      document.getElementById("latitude").value = result.latitude;
-      document.getElementById("longitude").value = result.longitude;
-
-      // Update view
+      // Use view methods instead of direct DOM access
+      this.view.setLocationCoordinates(result.latitude, result.longitude);
       this.view.updateLocationStatus(result.latitude, result.longitude);
       this.view.showMessage("Location detected successfully!", "success");
     } else {
@@ -139,15 +131,10 @@ class UploadStoryPresenter {
   handleResetLocation() {
     // Clear marker from map
     this.mapHandler.clearMarker();
-
     // Reset map view
     this.mapHandler.resetView();
-
-    // Clear location inputs
-    document.getElementById("latitude").value = "";
-    document.getElementById("longitude").value = "";
-
-    // Update view
+    // Use view methods instead of direct DOM access
+    this.view.clearLocationCoordinates();
     this.view.updateLocationStatus(null, null, false);
     this.view.showMessage("Location has been reset", "info");
   }
@@ -167,11 +154,9 @@ class UploadStoryPresenter {
     }
 
     try {
-      // Show loading state
       this.view.disableForm(true);
       this.view.showMessage("Uploading your story...", "info");
 
-      // Upload story using the model
       const result = await this.model.uploadStory(
         description,
         photoFile,
@@ -185,18 +170,14 @@ class UploadStoryPresenter {
           "success"
         );
 
-        // Reset form
         this.view.resetForm();
 
-        // Reset map location
         if (this.mapHandler) {
           this.mapHandler.clearMarker();
         }
 
-        // Redirect to home page after successful upload
-        setTimeout(() => {
-          window.location.hash = "#/";
-        }, 2000);
+        // Use view method for navigation instead of direct window access
+        this.view.navigateToHome();
       } else {
         throw new Error(result.error);
       }
@@ -204,7 +185,6 @@ class UploadStoryPresenter {
       this.view.showMessage(error.message || "Failed to upload story", "error");
       console.error("Upload error:", error);
     } finally {
-      // Hide loading state
       this.view.disableForm(false);
     }
   }

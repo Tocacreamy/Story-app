@@ -5,15 +5,12 @@ class HomeView {
 
   getTemplate() {
     return `
-      <a href="#main-content" class="skip-link">Skip to content</a>
       <section class="container">
         <h1>Beranda</h1>
         <div id="auth-status"></div>
-        <main id="main-content" tabindex="-1">
-          <div id="stories-container" class="stories-grid">
-            <p class="loading-text">Loading stories...</p>
-          </div>
-        </main>
+        <div id="stories-container" class="stories-grid">
+          <p class="loading-text">Loading stories...</p>
+        </div>
       </section>
     `;
   }
@@ -51,21 +48,33 @@ class HomeView {
     }
 
     storiesContainer.innerHTML = stories
-      .map(
-        (story) => `
-          <div class="story-card" style="view-transition-name: story-card-${story.id}">
-            <img src="${story.photoUrl}" 
-                 alt="Story image uploaded by ${story.name}" 
-                 class="story-image"
-                 style="view-transition-name: story-image-${story.id}">
-            <div class="story-content">
-              <h3 style="view-transition-name: story-title-${story.id}">${story.name}</h3>
-              <p class="story-desc">${story.description}</p>
-              <a href="#/detail/${story.id}" class="read-more" aria-label="Read more about ${story.name}'s story">Read More</a>
+      .map((story) => {
+        const createdDate = new Date(story.createdAt).toLocaleDateString(
+          "en-US",
+          {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          }
+        );
+
+        return `
+            <div class="story-card" style="view-transition-name: story-card-${story.id}">
+              <img src="${story.photoUrl}" 
+                   alt="Story image uploaded by ${story.name}" 
+                   class="story-image"
+                   style="view-transition-name: story-image-${story.id}">
+              <div class="story-content">
+                <div class="story-header">
+                  <h3 style="view-transition-name: story-title-${story.id}">${story.name}</h3>
+                  <span class="story-date">${createdDate}</span>
+                </div>
+                <p class="story-desc">${story.description}</p>
+                <a href="#/detail/${story.id}" class="read-more" aria-label="Read more about ${story.name}'s story">Read More</a>
+              </div>
             </div>
-          </div>
-        `
-      )
+          `;
+      })
       .join("");
   }
 
@@ -79,6 +88,10 @@ class HomeView {
     if (logoutBtn) {
       logoutBtn.addEventListener("click", handler);
     }
+  }
+
+  navigateToLogin() {
+    window.location.hash = "#/login";
   }
 }
 

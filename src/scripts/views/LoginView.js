@@ -1,7 +1,6 @@
 class LoginView {
   getTemplate() {
     return `
-      <a href="#main-content" class="skip-link">Skip to content</a>
       <section class="container login-container">
         <h1>Login to Your Account</h1>
         <main id="main-content" tabindex="-1">

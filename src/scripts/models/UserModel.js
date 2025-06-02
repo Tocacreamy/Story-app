@@ -1,12 +1,13 @@
 import CONFIG from "../config";
 
-class UserModel {
+export default class UserModel {
   constructor() {
     this.baseUrl = CONFIG.BASE_URL;
     this.endpoints = {
       LOGIN: `${this.baseUrl}/login`,
       REGISTER: `${this.baseUrl}/register`,
     };
+    this.storageKey = "user_session";
   }
 
   async login(email, password) {
@@ -30,9 +31,10 @@ class UserModel {
 
       if (data.loginResult && data.loginResult.token) {
         // Store user data in localStorage
-        localStorage.setItem("token", data.loginResult.token);
-        localStorage.setItem("userId", data.loginResult.userId);
-        localStorage.setItem("name", data.loginResult.name);
+        this.setUserSession(data.loginResult.token, {
+          userId: data.loginResult.userId,
+          name: data.loginResult.name,
+        });
 
         return data.loginResult;
       }
@@ -70,18 +72,39 @@ class UserModel {
   }
 
   isLoggedIn() {
-    return !!localStorage.getItem("token");
+    const token = this.getToken();
+    return !!token;
   }
 
-  logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("name");
+  getToken() {
+    return localStorage.getItem("token");
   }
 
   getUserName() {
-    return localStorage.getItem("name") || "User";
+    const userData = localStorage.getItem(this.storageKey);
+    if (userData) {
+      try {
+        const parsed = JSON.parse(userData);
+        return parsed.name;
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        return null;
+      }
+    }
+    return null;
+  }
+
+  setUserSession(token, userData) {
+    localStorage.setItem("token", token);
+    localStorage.setItem(this.storageKey, JSON.stringify(userData));
+  }
+
+  clearUserSession() {
+    localStorage.removeItem("token");
+    localStorage.removeItem(this.storageKey);
+  }
+
+  logout() {
+    this.clearUserSession();
   }
 }
-
-export default UserModel;

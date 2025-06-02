@@ -28,9 +28,9 @@ class LoginPresenter {
       await this.userModel.login(email, password);
       this.view.showMessage("Login successful!", "success");
 
-      // Redirect after successful login
+      // Use router instead of direct window access
       setTimeout(() => {
-        window.location.hash = "#/";
+        this.router.navigateTo("/");
       }, 1500);
     } catch (error) {
       this.view.showMessage(error.message || "Login failed", "error");

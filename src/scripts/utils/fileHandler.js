@@ -8,12 +8,8 @@ export default class FileHandler {
    * @param {string} filename - The filename to use
    * @returns {File} - A File object
    */
-  static createFileFromBlob(blob, filename) {
-    const mimeType = blob.type || 'image/jpeg';
-    return new File([blob], filename, {
-      type: mimeType,
-      lastModified: new Date().getTime()
-    });
+  static async createFileFromBlob(blob, filename) {
+    return new File([blob], filename, { type: blob.type });
   }
 
   /**
@@ -23,17 +19,34 @@ export default class FileHandler {
    * @returns {boolean} - Success state
    */
   static updateFileInput(fileInput, file) {
-    try {
-      // Create a DataTransfer
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(file);
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    fileInput.files = dt.files;
+  }
 
-      // Set the files
-      fileInput.files = dataTransfer.files;
-      return true;
-    } catch (error) {
-      console.error("Error updating file input:", error);
-      return false;
+  /**
+   * Validates an image file
+   * @param {File} file - The file to validate
+   * @returns {Object} - Validation result
+   */
+  static validateImageFile(file) {
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (!allowedTypes.includes(file.type)) {
+      return {
+        isValid: false,
+        error: "Please select a valid image file (JPEG, PNG, or GIF)",
+      };
     }
+
+    if (file.size > maxSize) {
+      return {
+        isValid: false,
+        error: "File size must be less than 5MB",
+      };
+    }
+
+    return { isValid: true };
   }
 }

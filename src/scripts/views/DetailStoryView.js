@@ -3,7 +3,6 @@ import { safeAnimate } from "../utils/index.js";
 class DetailStoryView {
   getTemplate() {
     return `
-      <a href="#main-content" class="skip-link">Skip to content</a>
       <section class="container">
         <a href="#/" class="back-button">← Back to Stories</a>
         <h1>Story Details</h1>

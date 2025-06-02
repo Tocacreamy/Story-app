@@ -41,9 +41,25 @@
   padding: 20px;
 }
 
+.story-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+
 .story-content h3 {
   font-size: 1.25rem;
-  margin-bottom: 12px;
+  margin-bottom: 0;
+  flex: 1;
+}
+
+.story-date {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  margin-top: 2px;
 }
 
 .story-desc {
