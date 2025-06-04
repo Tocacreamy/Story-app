@@ -56,7 +56,7 @@ class DetailStoryView {
       <div class="detail-story">
         <div class="detail-story-header">
           <h2 style="view-transition-name: story-title-${storyData.id}">${storyData.name}</h2>
-          <p class="story-date">${formattedDate}</p>
+          <p class="story-date" aria-label="Story created on ${formattedDate}">${formattedDate}</p>
         </div>
         
         <div class="detail-story-image">
@@ -67,6 +67,7 @@ class DetailStoryView {
         </div>
         
         <div class="detail-story-content">
+          <h3 class="visually-hidden">Story Description</h3>
           <p class="story-description">${storyData.description}</p>
         </div>
     `;
@@ -75,7 +76,7 @@ class DetailStoryView {
       storyHTML += `
         <div class="detail-story-location">
           <h3>Location</h3>
-          <div id="story-map" class="story-map"></div>
+          <div id="story-map" class="story-map" aria-label="Map showing story location"></div>
         </div>
       `;
     }

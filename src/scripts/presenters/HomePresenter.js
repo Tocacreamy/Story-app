@@ -10,7 +10,6 @@ class HomePresenter {
       this.view.showAuthenticatedUser(userName);
       this.view.bindLogoutButton(() => {
         this.model.logout();
-        // Use view method for navigation instead of direct window access
         this.view.navigateToLogin();
       });
 

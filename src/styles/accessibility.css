@@ -11,6 +11,9 @@
   text-decoration: none;
   border-radius: 0 0 4px 4px;
   border: 2px solid var(--primary-color);
+  /* Ensure they're absolutely first in tab order */
+  order: -999;
+  display: block;
 }
 
 .skip-link:focus {
@@ -28,9 +31,26 @@
   left: 320px;
 }
 
-/* Ensure skip links are always first in tab order */
-.skip-link {
+/* Force skip links to be first in DOM order */
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+body > .skip-link {
   order: -999;
+}
+
+body > header {
+  order: 1;
+}
+
+body > main {
+  order: 2;
+}
+
+body > footer {
+  order: 3;
 }
 
 /* Focus styles for better keyboard navigation */
@@ -51,5 +71,10 @@ textarea:focus {
 
 /* Remove focus outline for mouse users */
 :focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Ensure main content is focusable for skip link */
+#main-content:focus {
   outline: none;
 }
