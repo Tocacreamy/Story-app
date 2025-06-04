@@ -5,6 +5,7 @@ class App {
   #content = null;
   #drawerButton = null;
   #navigationDrawer = null;
+  #currentPage = null;
 
   constructor({ navigationDrawer, drawerButton, content }) {
     this.#content = content;
@@ -43,6 +44,11 @@ class App {
     const url = getActiveRoute();
     const page = routes[url];
 
+    // Cleanup previous page if it has cleanup method
+    if (this.#currentPage && typeof this.#currentPage.cleanup === "function") {
+      this.#currentPage.cleanup();
+    }
+
     // Check if View Transitions API is supported
     if (
       document.startViewTransition &&
@@ -70,6 +76,9 @@ class App {
       this.#content.focus();
       this.#announcePageChange();
     }
+
+    // Store current page reference
+    this.#currentPage = page;
   }
 
   #announcePageChange() {

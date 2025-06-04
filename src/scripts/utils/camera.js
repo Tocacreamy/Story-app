@@ -2,6 +2,8 @@ export default class CameraHandler {
   constructor() {
     this.stream = null;
     this.videoElement = null;
+    this.containerElement = null;
+    this.isActive = false;
   }
 
   /**
@@ -30,6 +32,7 @@ export default class CameraHandler {
 
       this.videoElement.srcObject = this.stream;
       this.containerElement.style.display = "block";
+      this.isActive = true;
       return { success: true };
     } catch (error) {
       return {
@@ -44,10 +47,31 @@ export default class CameraHandler {
    */
   closeCamera() {
     if (this.stream) {
-      this.stream.getTracks().forEach((track) => track.stop());
+      // Stop all tracks to release camera
+      this.stream.getTracks().forEach((track) => {
+        track.stop();
+        console.log("Camera track stopped:", track.kind);
+      });
       this.stream = null;
     }
-    this.containerElement.style.display = "none";
+
+    if (this.videoElement) {
+      this.videoElement.srcObject = null;
+    }
+
+    if (this.containerElement) {
+      this.containerElement.style.display = "none";
+    }
+
+    this.isActive = false;
+  }
+
+  /**
+   * Check if camera is currently active
+   * @returns {boolean} - True if camera is active
+   */
+  isActiveCamera() {
+    return this.isActive && this.stream && this.stream.active;
   }
 
   /**
@@ -55,7 +79,7 @@ export default class CameraHandler {
    * @returns {Object} - Contains the captured image data
    */
   capturePhoto() {
-    if (!this.stream) return { success: false };
+    if (!this.stream || !this.isActive) return { success: false };
 
     // Create canvas to capture frame
     const canvas = document.createElement("canvas");
@@ -87,19 +111,19 @@ export default class CameraHandler {
    */
   _dataURLtoBlob(dataUrl) {
     // Split the data URL to get the content type and base64 data
-    const parts = dataUrl.split(';base64,');
-    const contentType = parts[0].split(':')[1];
+    const parts = dataUrl.split(";base64,");
+    const contentType = parts[0].split(":")[1];
     const raw = window.atob(parts[1]);
     const rawLength = raw.length;
-    
+
     // Create an array buffer of the right size
     const uInt8Array = new Uint8Array(rawLength);
-    
+
     // Fill the array with the binary data
     for (let i = 0; i < rawLength; ++i) {
       uInt8Array[i] = raw.charCodeAt(i);
     }
-    
+
     // Create a blob with the correct MIME type
     return new Blob([uInt8Array], { type: contentType });
   }

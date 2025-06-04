@@ -6,6 +6,7 @@ class UploadStoryPresenter {
     this.model = model;
     this.mapHandler = mapHandler;
     this.cameraHandler = cameraHandler;
+    this.isInitialized = false;
   }
 
   async init() {
@@ -28,7 +29,33 @@ class UploadStoryPresenter {
     // Initialize map
     await this.initializeMap();
 
+    // Setup cleanup on page unload/navigation
+    this.setupCleanup();
+    this.isInitialized = true;
+
     return true;
+  }
+
+  setupCleanup() {
+    // Cleanup when page is about to unload
+    window.addEventListener("beforeunload", this.cleanup.bind(this));
+
+    // Cleanup when hash changes (navigation)
+    window.addEventListener("hashchange", this.cleanup.bind(this));
+
+    // Cleanup when page becomes hidden (mobile/tab switching)
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        this.cleanup();
+      }
+    });
+  }
+
+  cleanup() {
+    if (this.cameraHandler && this.isInitialized) {
+      // Close camera stream if it's active
+      this.cameraHandler.closeCamera();
+    }
   }
 
   bindEventHandlers() {
@@ -139,6 +166,7 @@ class UploadStoryPresenter {
     this.view.showMessage("Location has been reset", "info");
   }
 
+  // Clean up when form is submitted and user navigates away
   async handleFormSubmit() {
     // Get form data from view
     const description = this.view.getDescription();
@@ -175,6 +203,9 @@ class UploadStoryPresenter {
         if (this.mapHandler) {
           this.mapHandler.clearMarker();
         }
+
+        // Clean up camera before navigation
+        this.cleanup();
 
         // Use view method for navigation instead of direct window access
         this.view.navigateToHome();
