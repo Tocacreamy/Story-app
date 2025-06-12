@@ -7,11 +7,10 @@
   font-weight: 600;
   padding: 8px 16px;
   z-index: 99999;
-  transition: top 0.3s;
+  transition: top 0.3s ease;
   text-decoration: none;
   border-radius: 0 0 4px 4px;
   border: 2px solid var(--primary-color);
-  /* Ensure they're absolutely first in tab order */
   order: -999;
   display: block;
 }
@@ -22,35 +21,9 @@
   outline-offset: 2px;
 }
 
-/* Multiple skip links positioning */
-.skip-link:nth-of-type(2) {
-  left: 170px;
-}
-
-.skip-link:nth-of-type(3) {
-  left: 320px;
-}
-
-/* Force skip links to be first in DOM order */
-body {
-  display: flex;
-  flex-direction: column;
-}
-
-body > .skip-link {
-  order: -999;
-}
-
-body > header {
-  order: 1;
-}
-
-body > main {
-  order: 2;
-}
-
-body > footer {
-  order: 3;
+/* Ensure skip link is always accessible */
+.skip-link:focus-visible {
+  top: 0;
 }
 
 /* Focus styles for better keyboard navigation */

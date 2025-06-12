@@ -4,6 +4,18 @@ export default class CameraHandler {
     this.videoElement = null;
     this.containerElement = null;
     this.isActive = false;
+    this.errorCallbacks = [];
+  }
+
+  // Add error callback registration
+  onError(callback) {
+    this.errorCallbacks.push(callback);
+  }
+
+  // Enhanced error handling
+  #handleError(error, context = "camera") {
+    console.error(`Camera error in ${context}:`, error);
+    this.errorCallbacks.forEach((callback) => callback(error, context));
   }
 
   /**
@@ -22,6 +34,11 @@ export default class CameraHandler {
    */
   async openCamera() {
     try {
+      // Check if getUserMedia is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Camera access is not supported in this browser");
+      }
+
       this.stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "environment",
@@ -35,10 +52,26 @@ export default class CameraHandler {
       this.isActive = true;
       return { success: true };
     } catch (error) {
+      this.#handleError(error, "openCamera");
       return {
         success: false,
-        error: `Could not access camera: ${error.message}`,
+        error: this.#getFriendlyErrorMessage(error),
       };
+    }
+  }
+
+  #getFriendlyErrorMessage(error) {
+    switch (error.name) {
+      case "NotAllowedError":
+        return "Camera access was denied. Please allow camera access in your browser settings.";
+      case "NotFoundError":
+        return "No camera found on this device.";
+      case "NotSupportedError":
+        return "Camera is not supported in this browser.";
+      case "NotReadableError":
+        return "Camera is already in use by another application.";
+      default:
+        return `Could not access camera: ${error.message}`;
     }
   }
 

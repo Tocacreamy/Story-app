@@ -15,14 +15,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     await app.renderPage();
   });
 
-  // Set up the skip link functionality
+  // Enhanced skip link functionality
   const mainContent = document.querySelector("#main-content");
   const skipLink = document.querySelector(".skip-link");
 
-  skipLink.addEventListener("click", function (event) {
-    event.preventDefault(); 
-    skipLink.blur(); 
-    mainContent.focus(); 
-    mainContent.scrollIntoView(); 
-  });
+  if (skipLink && mainContent) {
+    skipLink.addEventListener("click", function (event) {
+      event.preventDefault();
+      skipLink.blur();
+      mainContent.focus();
+      mainContent.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      // Announce the action for screen readers
+      const announcement = document.createElement("div");
+      announcement.setAttribute("aria-live", "assertive");
+      announcement.className = "visually-hidden";
+      announcement.textContent = "Skipped to main content";
+      document.body.appendChild(announcement);
+
+      setTimeout(() => {
+        document.body.removeChild(announcement);
+      }, 1000);
+    });
+  }
 });

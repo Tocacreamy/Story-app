@@ -66,7 +66,7 @@ class HomeView {
                    style="view-transition-name: story-image-${story.id}">
               <div class="story-content">
                 <div class="story-header">
-                  <h3 style="view-transition-name: story-title-${story.id}">${story.name}</h3>
+                  <h1 class="story-name" style="view-transition-name: story-title-${story.id}">${story.name}</h1>
                   <span class="story-date">${createdDate}</span>
                 </div>
                 <p class="story-desc">${story.description}</p>

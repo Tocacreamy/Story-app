@@ -16,14 +16,16 @@
     <script type="module" src="/scripts/index.js"></script>
   </head>
   <body>
-    <!-- Skip links MUST be the very first focusable elements -->
-
     <header>
       <div class="main-header container">
-        <a href="#" class="skip-link">Skip to main content</a>
+        <a href="#main-content" class="skip-link">Skip to main content</a>
         <a class="brand-name" href="#/">Story App</a>
 
-        <nav id="navigation-drawer" class="navigation-drawer">
+        <nav
+          id="navigation-drawer"
+          class="navigation-drawer"
+          aria-label="Main navigation"
+        >
           <ul id="nav-list" class="nav-list">
             <li><a href="#/">Beranda</a></li>
             <li><a href="#/uploadStory">Upload Story</a></li>
@@ -42,9 +44,14 @@
       </div>
     </header>
 
-    <main id="main-content" class="main-content" tabindex="-1"></main>
+    <main
+      id="main-content"
+      class="main-content"
+      tabindex="-1"
+      role="main"
+    ></main>
 
-    <footer class="site-footer">
+    <footer class="site-footer" role="contentinfo">
       <div class="container footer-content">
         <div class="footer-branding">
           <a href="#/" class="footer-brand">Story App</a>

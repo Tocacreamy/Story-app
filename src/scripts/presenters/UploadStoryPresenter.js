@@ -7,6 +7,7 @@ class UploadStoryPresenter {
     this.mapHandler = mapHandler;
     this.cameraHandler = cameraHandler;
     this.isInitialized = false;
+    this.eventListeners = []; // Track event listeners for cleanup
   }
 
   async init() {
@@ -37,18 +38,30 @@ class UploadStoryPresenter {
   }
 
   setupCleanup() {
-    // Cleanup when page is about to unload
-    window.addEventListener("beforeunload", this.cleanup.bind(this));
-
-    // Cleanup when hash changes (navigation)
-    window.addEventListener("hashchange", this.cleanup.bind(this));
-
-    // Cleanup when page becomes hidden (mobile/tab switching)
-    document.addEventListener("visibilitychange", () => {
+    // Store event listeners for later cleanup
+    const beforeUnloadHandler = this.cleanup.bind(this);
+    const hashChangeHandler = this.cleanup.bind(this);
+    const visibilityChangeHandler = () => {
       if (document.hidden) {
         this.cleanup();
       }
-    });
+    };
+
+    // Add event listeners
+    window.addEventListener("beforeunload", beforeUnloadHandler);
+    window.addEventListener("hashchange", hashChangeHandler);
+    document.addEventListener("visibilitychange", visibilityChangeHandler);
+
+    // Store references for cleanup
+    this.eventListeners = [
+      { element: window, event: "beforeunload", handler: beforeUnloadHandler },
+      { element: window, event: "hashchange", handler: hashChangeHandler },
+      {
+        element: document,
+        event: "visibilitychange",
+        handler: visibilityChangeHandler,
+      },
+    ];
   }
 
   cleanup() {
@@ -56,6 +69,14 @@ class UploadStoryPresenter {
       // Close camera stream if it's active
       this.cameraHandler.closeCamera();
     }
+
+    // Remove event listeners to prevent memory leaks
+    this.eventListeners.forEach(({ element, event, handler }) => {
+      element.removeEventListener(event, handler);
+    });
+    this.eventListeners = [];
+
+    this.isInitialized = false;
   }
 
   bindEventHandlers() {

@@ -1,7 +1,7 @@
 import HomePage from "../pages/home/home-page";
 import Register from "../pages/register/regist-page";
 import Login from "../pages/login/login-page";
-import UploadStoryPage from "../pages/UploadStory/uploadStory-page";
+import UploadStoryPage from "../pages/uploadStory/uploadStory-page"; // Use lowercase folder
 import DetailStory from "../pages/detailStory/detailStory-page";
 
 const routes = {

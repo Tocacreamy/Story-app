@@ -10,7 +10,7 @@ export default class UploadStoryPage {
     this.model = new UploadStoryModel();
     this.mapHandler = new MapHandler();
     this.cameraHandler = new CameraHandler();
-    this.presenter = null; // Will be initialized in afterRender
+    this.presenter = null;
   }
 
   async render() {
@@ -36,5 +36,12 @@ export default class UploadStoryPage {
 
     // Initialize the presenter
     await this.presenter.init();
+  }
+
+  // Add cleanup method that can be called when page is destroyed
+  cleanup() {
+    if (this.presenter) {
+      this.presenter.cleanup();
+    }
   }
 }

@@ -274,3 +274,9 @@
 }
 
 /* Add more page-specific styles as needed */
+.story-name{
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
