@@ -1,0 +1,61 @@
+/* Notification Settings */
+.notification-settings {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.setting-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--card-radius);
+  padding: 30px;
+  margin-bottom: 20px;
+}
+
+.setting-card h2 {
+  margin-bottom: 15px;
+  color: var(--primary-color);
+  font-size: 1.5rem;
+}
+
+.setting-card p {
+  color: var(--text-muted);
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+.notification-status {
+  margin-bottom: 20px;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid var(--text-muted);
+}
+
+.status-indicator.success {
+  border-left-color: var(--success-color);
+  background: rgba(3, 218, 198, 0.1);
+}
+
+.status-indicator.error {
+  border-left-color: var(--error-color);
+  background: rgba(207, 102, 121, 0.1);
+}
+
+.status-icon {
+  font-size: 1.2rem;
+}
+
+.notification-controls {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}

@@ -2,6 +2,7 @@
 import "../styles/main.css";
 
 import App from "./pages/app";
+import PushNotificationManager from "./utils/pushNotification.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   const app = new App({
@@ -9,6 +10,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     drawerButton: document.querySelector("#drawer-button"),
     navigationDrawer: document.querySelector("#navigation-drawer"),
   });
+
+  // Initialize push notifications
+  const pushManager = new PushNotificationManager();
+  window.pushManager = pushManager; // Make it globally available
+
+  // Initialize service worker and push notifications
+  const initResult = await pushManager.init();
+  if (initResult.success) {
+    console.log("Push notifications initialized successfully");
+  } else {
+    console.warn("Push notifications initialization failed:", initResult.error);
+  }
+
   await app.renderPage();
 
   window.addEventListener("hashchange", async () => {
