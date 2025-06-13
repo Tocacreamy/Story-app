@@ -7,6 +7,19 @@ const { CacheFirst, NetworkFirst, StaleWhileRevalidate } = workbox.strategies;
 const { ExpirationPlugin } = workbox.expiration;
 const { CacheableResponsePlugin } = workbox.cacheableResponse;
 
+const CACHE_NAME = "story-app-v1";
+const BASE_URL = '/starter-project-with-vite/'; // Sesuaikan dengan nama repo Anda
+
+const STATIC_CACHE = [
+  BASE_URL,
+  `${BASE_URL}scripts/index.js`,
+  `${BASE_URL}scripts/database.js`,
+  `${BASE_URL}styles/main.css`,
+  `${BASE_URL}favicon.png`,
+  `${BASE_URL}offline.html`,
+  `${BASE_URL}images/offline-image.png`
+];
+
 // Precaching
 workbox.precaching.precacheAndRoute([
   { url: '/', revision: '1' },
@@ -131,4 +144,62 @@ self.addEventListener('notificationclick', (event) => {
       clients.openWindow('/')
     );
   }
+});
+
+// Update fetch event handler
+self.addEventListener("fetch", (event) => {
+  const { request } = event;
+
+  // Ignore chrome-extension requests
+  if (request.url.startsWith('chrome-extension://')) {
+    return;
+  }
+
+  // Handle API requests
+  if (request.url.includes('/api/')) {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          const responseClone = response.clone();
+          caches.open(DYNAMIC_CACHE).then(cache => {
+            cache.put(request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => {
+          return caches.match(request);
+        })
+    );
+    return;
+  }
+
+  // Handle other requests
+  event.respondWith(
+    caches
+      .match(request)
+      .then((response) => {
+        return response || fetch(request)
+          .then(response => {
+            if (request.destination === 'image' || request.destination === 'script' || request.destination === 'style') {
+              const responseClone = response.clone();
+              caches.open(DYNAMIC_CACHE).then(cache => {
+                cache.put(request, responseClone);
+              });
+            }
+            return response;
+          })
+          .catch(() => {
+            if (request.destination === "document") {
+              return caches.match(`${BASE_URL}offline.html`);
+            }
+            if (request.destination === "image") {
+              return caches.match(`${BASE_URL}images/offline-image.png`);
+            }
+            return new Response('', {
+              status: 404,
+              statusText: 'Not Found'
+            });
+          });
+      })
+  );
 });
