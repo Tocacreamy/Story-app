@@ -8,7 +8,7 @@ const { ExpirationPlugin } = workbox.expiration;
 const { CacheableResponsePlugin } = workbox.cacheableResponse;
 
 const CACHE_NAME = "story-app-v1";
-const BASE_URL = "/starter-project-with-vite/"; // GitHub repository name
+const BASE_URL = "/Story-app/"; // GitHub repository name
 
 const STATIC_CACHE = [
   BASE_URL,
