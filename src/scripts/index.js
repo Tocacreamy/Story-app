@@ -1,4 +1,3 @@
-// CSS imports
 import "../styles/main.css";
 
 import App from "./pages/app";
