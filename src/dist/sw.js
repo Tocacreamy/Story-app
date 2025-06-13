@@ -8,7 +8,7 @@ const { ExpirationPlugin } = workbox.expiration;
 const { CacheableResponsePlugin } = workbox.cacheableResponse;
 
 const CACHE_NAME = "story-app-v1";
-const BASE_URL = '/Story-app/PWA-feature/'; // Sesuaikan dengan nama repo dan branch
+const BASE_URL = '/story-app/pwa-feature/'; // Sesuaikan dengan nama repo dan branch
 
 const STATIC_CACHE = [
   BASE_URL,

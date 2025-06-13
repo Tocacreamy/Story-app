@@ -3,7 +3,7 @@ import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/Story-app/PWA-feature/',
+  base: '/story-app/pwa-feature/',
   root: resolve(__dirname, 'src'),
   publicDir: resolve(__dirname, 'src', 'public'),
   build: {
