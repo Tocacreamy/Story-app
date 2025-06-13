@@ -1,208 +1,134 @@
-const CACHE_NAME = "story-app-v1";
-const STATIC_CACHE = [
-  "/",
-  "/scripts/index.js",
-  "/scripts/database.js",
-  "/styles/main.css",
-  "/favicon.png",
-  "/offline.html",
-  "/images/offline-image.png"
-];
+importScripts(
+  'https://storage.googleapis.com/workbox-cdn/releases/6.4.1/workbox-sw.js'
+);
 
-const DYNAMIC_CACHE = "dynamic-cache-v1";
+const { registerRoute } = workbox.routing;
+const { CacheFirst, NetworkFirst, StaleWhileRevalidate } = workbox.strategies;
+const { ExpirationPlugin } = workbox.expiration;
+const { CacheableResponsePlugin } = workbox.cacheableResponse;
 
-// Install event - cache static assets
-self.addEventListener("install", (event) => {
-  console.log("Service Worker: Install event");
-  event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => {
-        console.log("Service Worker: Caching files");
-        return cache.addAll(STATIC_CACHE);
+// Precaching
+workbox.precaching.precacheAndRoute([
+  { url: '/', revision: '1' },
+  { url: '/offline.html', revision: '1' },
+  { url: '/styles/main.css', revision: '1' },
+  { url: '/scripts/index.js', revision: '1' },
+  { url: '/scripts/database.js', revision: '1' },
+  { url: '/favicon.png', revision: '1' },
+  { url: '/images/offline-image.png', revision: '1' }
+]);
+
+// Cache images with CacheFirst strategy
+registerRoute(
+  ({ request }) => request.destination === 'image',
+  new CacheFirst({
+    cacheName: 'images',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200]
+      }),
+      new ExpirationPlugin({
+        maxEntries: 60,
+        maxAgeSeconds: 30 * 24 * 60 * 60 // 30 Days
       })
-      .then(() => self.skipWaiting())
-  );
-});
+    ]
+  })
+);
 
-// Activate event - clean up old caches
-self.addEventListener("activate", (event) => {
-  console.log("Service Worker: Activate event");
-  event.waitUntil(
-    caches
-      .keys()
-      .then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => {
-            if (cacheName !== CACHE_NAME && cacheName !== DYNAMIC_CACHE) {
-              console.log("Service Worker: Deleting old cache");
-              return caches.delete(cacheName);
-            }
-          })
-        );
+// Cache API requests with NetworkFirst strategy
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/api/'),
+  new NetworkFirst({
+    cacheName: 'api-cache',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200]
+      }),
+      new ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 5 * 60 // 5 minutes
       })
-      .then(() => self.clients.claim())
-  );
-});
+    ]
+  })
+);
 
-// Fetch event - serve from cache when offline
-self.addEventListener("fetch", (event) => {
-  const { request } = event;
+// Cache static assets with StaleWhileRevalidate
+registerRoute(
+  ({ request }) => 
+    request.destination === 'style' ||
+    request.destination === 'script' ||
+    request.destination === 'font',
+  new StaleWhileRevalidate({
+    cacheName: 'static-resources',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200]
+      })
+    ]
+  })
+);
 
-  // Ignore chrome-extension requests
-  if (request.url.startsWith('chrome-extension://')) {
-    return;
+// Handle offline fallback
+workbox.routing.setCatchHandler(async ({ request }) => {
+  if (request.destination === 'document') {
+    return caches.match('/offline.html');
   }
-
-  // Handle API requests
-  if (request.url.includes('/api/')) {
-    event.respondWith(
-      fetch(request)
-        .then(response => {
-          // Clone the response
-          const responseClone = response.clone();
-          
-          // Cache the response
-          caches.open(DYNAMIC_CACHE).then(cache => {
-            cache.put(request, responseClone);
-          });
-          
-          return response;
-        })
-        .catch(() => {
-          // Try to get from cache
-          return caches.match(request);
-        })
-    );
-    return;
+  if (request.destination === 'image') {
+    return caches.match('/images/offline-image.png');
   }
-
-  // Handle other requests
-  event.respondWith(
-    caches
-      .match(request)
-      .then((response) => {
-        return response || fetch(request)
-          .then(response => {
-            // Cache dynamic content
-            if (request.destination === 'image' || request.destination === 'script' || request.destination === 'style') {
-              const responseClone = response.clone();
-              caches.open(DYNAMIC_CACHE).then(cache => {
-                cache.put(request, responseClone);
-              });
-            }
-            return response;
-          })
-          .catch(() => {
-            // Return offline page for document requests
-            if (request.destination === "document") {
-              return caches.match("/offline.html");
-            }
-            // Return fallback for images
-            if (request.destination === "image") {
-              // Try to get the image from cache first
-              return caches.match(request)
-                .then(cachedResponse => {
-                  if (cachedResponse) {
-                    return cachedResponse;
-                  }
-                  // If not in cache, return offline image
-                  return caches.match("/images/offline-image.png");
-                });
-            }
-            // Return empty response for other requests
-            return new Response('', {
-              status: 404,
-              statusText: 'Not Found'
-            });
-          });
-      })
-  );
+  return Response.error();
 });
 
-// Push event - handle incoming push notifications
-self.addEventListener("push", (event) => {
-  console.log("Service Worker: Push event received");
+// Background sync for failed requests
+const bgSyncPlugin = new workbox.backgroundSync.BackgroundSyncPlugin('storyQueue', {
+  maxRetentionTime: 24 * 60 // Retry for max of 24 Hours
+});
 
-  let notificationData = {
-    title: "Story App",
-    options: {
-      body: "You have a new notification",
-      icon: "/favicon.png",
-      badge: "/favicon.png",
-      tag: "story-notification",
-      data: { url: "/" },
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/api/'),
+  new NetworkFirst({
+    plugins: [bgSyncPlugin]
+  }),
+  'POST'
+);
+
+// Push notifications
+self.addEventListener('push', (event) => {
+  const options = {
+    body: event.data.text(),
+    icon: '/icons/icon-192x192.png',
+    badge: '/icons/icon-192x192.png',
+    vibrate: [100, 50, 100],
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: 1
     },
+    actions: [
+      {
+        action: 'explore',
+        title: 'View Story',
+        icon: '/icons/icon-192x192.png'
+      },
+      {
+        action: 'close',
+        title: 'Close',
+        icon: '/icons/icon-192x192.png'
+      }
+    ]
   };
 
-  try {
-    if (event.data) {
-      const pushData = event.data.json();
-      notificationData = {
-        title: pushData.title || notificationData.title,
-        options: {
-          body: pushData.options?.body || notificationData.options.body,
-          icon: pushData.options?.icon || notificationData.options.icon,
-          badge: pushData.options?.badge || notificationData.options.badge,
-          tag: "story-notification",
-          renotify: true,
-          requireInteraction: true,
-          actions: [
-            {
-              action: "view",
-              title: "View Stories",
-              icon: "/favicon.png",
-            },
-            {
-              action: "dismiss",
-              title: "Dismiss",
-            },
-          ],
-          data: {
-            url: pushData.options?.url || "/",
-            timestamp: Date.now(),
-          },
-        },
-      };
-    }
-  } catch (error) {
-    console.error("Service Worker: Error parsing push data:", error);
-  }
-
   event.waitUntil(
-    self.registration.showNotification(
-      notificationData.title,
-      notificationData.options
-    )
+    self.registration.showNotification('Story App', options)
   );
 });
 
-// Notification click event - handle user interaction
-self.addEventListener("notificationclick", (event) => {
-  console.log("Service Worker: Notification click event");
+// Handle notification clicks
+self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
-  if (event.action === "dismiss") {
-    return;
+  if (event.action === 'explore') {
+    event.waitUntil(
+      clients.openWindow('/')
+    );
   }
-
-  const urlToOpen = event.notification.data?.url || "/";
-
-  event.waitUntil(
-    clients
-      .matchAll({ type: "window", includeUncontrolled: true })
-      .then((clientList) => {
-        // Check if app is already open
-        for (const client of clientList) {
-          if (client.url.includes(urlToOpen) && "focus" in client) {
-            return client.focus();
-          }
-        }
-
-        // Open new window if app isn't open
-        if (clients.openWindow) {
-          return clients.openWindow(urlToOpen);
-        }
-      })
-  );
 });
