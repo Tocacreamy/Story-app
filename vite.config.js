@@ -3,15 +3,15 @@ import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/starter-project-with-vite/',
+  base: '/Story-app/PWA-feature/',
   root: resolve(__dirname, 'src'),
   publicDir: resolve(__dirname, 'src', 'public'),
   build: {
-    outDir: resolve(__dirname, 'dist'),
+    outDir: 'dist',
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: './src/index.html',
+        main: resolve(__dirname, 'src/index.html'),
       },
     },
   },
