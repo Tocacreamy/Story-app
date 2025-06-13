@@ -1,23 +1,23 @@
-import { defineConfig } from 'vite';
-import { resolve } from 'path';
+import { defineConfig } from "vite";
+import { resolve } from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/story-app/pwa-feature/',
-  root: resolve(__dirname, 'src'),
-  publicDir: resolve(__dirname, 'src', 'public'),
+  base: "/starter-project-with-vite/",
+  root: resolve(__dirname, "src"),
+  publicDir: resolve(__dirname, "src", "public"),
   build: {
-    outDir: 'dist',
+    outDir: "../dist",
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'src/index.html'),
+        main: resolve(__dirname, "src/index.html"),
       },
     },
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
+      "@": resolve(__dirname, "src"),
     },
   },
   server: {
@@ -26,10 +26,10 @@ export default defineConfig({
   // Enable service worker in development
   plugins: [
     {
-      name: 'configure-response-headers',
+      name: "configure-response-headers",
       configureServer: (server) => {
         server.middlewares.use((_req, res, next) => {
-          res.setHeader('Service-Worker-Allowed', '/');
+          res.setHeader("Service-Worker-Allowed", "/");
           next();
         });
       },
