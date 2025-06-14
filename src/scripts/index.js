@@ -4,7 +4,23 @@ import "../styles/main.css";
 import App from "./pages/app";
 import PushNotificationManager from "./utils/pushNotification.js";
 
+function updateOnlineStatus() {
+  const indicator = document.getElementById('offline-indicator');
+  if (!navigator.onLine) {
+    indicator.style.display = 'block';
+    document.body.classList.add('has-offline-indicator');
+  } else {
+    indicator.style.display = 'none';
+    document.body.classList.remove('has-offline-indicator');
+  }
+}
+
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
 document.addEventListener("DOMContentLoaded", async () => {
+  updateOnlineStatus();
+
   const app = new App({
     content: document.querySelector("#main-content"),
     drawerButton: document.querySelector("#drawer-button"),

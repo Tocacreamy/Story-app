@@ -9,3 +9,44 @@
 @import "transitions.css";
 @import "accessibility.css";
 @import "notifications.css";
+
+#offline-indicator {
+  width: 100%;
+  background: #ff4d4f;
+  color: #fff;
+  text-align: center;
+  padding: 8px 0;
+  font-weight: 500;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+body.has-offline-indicator {
+  padding-top: 40px; /* adjust if needed */
+}
+
+.offline-indicator {
+  display: flex;
+  align-items: center;
+  background: #ff4d4f;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-left: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  height: 32px;
+}
+
+@media (max-width: 600px) {
+  .offline-indicator {
+    font-size: 0.85rem;
+    padding: 2px 8px;
+    height: 28px;
+    margin-left: 0.5rem;
+  }
+}

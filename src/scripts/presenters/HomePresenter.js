@@ -17,7 +17,11 @@ class HomePresenter {
         const stories = await this.model.getStories();
         this.view.displayStories(stories);
       } catch (error) {
-        this.view.showErrorMessage(error.message);
+        if (!navigator.onLine) {
+          this.view.showErrorMessage("You are offline. Stories cannot be loaded right now.");
+        } else {
+          this.view.showErrorMessage("Error: Failed to fetch stories: " + error.message);
+        }
       }
     } else {
       this.view.showLoginMessage();
