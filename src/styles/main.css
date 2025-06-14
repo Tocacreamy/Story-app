@@ -124,3 +124,34 @@ body.has-offline-indicator {
   transform: translateY(0); /* Press down effect on click */
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
+
+/* Styling for Not Found Page */
+.not-found-heading {
+  font-size: 3rem;
+  color: #a020f0; /* A color that stands out, e.g., purple */
+  margin-bottom: 1rem;
+}
+
+.not-found-message {
+  font-size: 1.2rem;
+  color: #ccc; /* Lighter text for the message */
+  margin-bottom: 2rem;
+}
+
+.btn-primary {
+  background-color: #5a2c7a; /* Consistent with install button */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #7b4397;
+}

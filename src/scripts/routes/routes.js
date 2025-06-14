@@ -5,6 +5,7 @@ import UploadStoryPage from "../pages/uploadStory/uploadStory-page";
 import DetailStory from "../pages/detailStory/detailStory-page";
 import NotificationsPage from "../pages/notifications/notifications-page.js";
 import SavedStoriesPage from "../pages/savedStories/savedStories-page.js";
+import NotFoundPage from "../pages/notFound/notFound-page.js";
 
 const routes = {
   "/": new HomePage(),

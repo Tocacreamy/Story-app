@@ -1,5 +1,6 @@
 import routes from "../routes/routes";
 import { getActiveRoute } from "../routes/url-parser";
+import NotFoundPage from "../pages/notFound/notFound-page.js";
 
 class App {
   #content = null;
@@ -42,7 +43,8 @@ class App {
 
   async renderPage() {
     const url = getActiveRoute();
-    const page = routes[url];
+    // Use the matched route, or fallback to NotFoundPage if no route matches
+    const page = routes[url] || new NotFoundPage();
 
     // Cleanup previous page if it has cleanup method
     if (this.#currentPage && typeof this.#currentPage.cleanup === "function") {
