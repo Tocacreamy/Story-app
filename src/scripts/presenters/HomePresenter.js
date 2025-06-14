@@ -1,3 +1,5 @@
+import { saveStories, getCachedStories } from '../database.js';
+
 class HomePresenter {
   constructor(view, model) {
     this.view = view;
@@ -16,9 +18,20 @@ class HomePresenter {
       try {
         const stories = await this.model.getStories();
         this.view.displayStories(stories);
+        // Save stories to IndexedDB for offline use
+
+        await saveStories(stories);
+        console.log("Stories saved to IndexedDB");
       } catch (error) {
         if (!navigator.onLine) {
-          this.view.showErrorMessage("You are offline. Stories cannot be loaded right now.");
+          // Try to load cached stories from IndexedDB
+          const cachedStories = await getCachedStories();
+          if (cachedStories && cachedStories.length > 0) {
+            this.view.displayStories(cachedStories);
+            this.view.showErrorMessage("You are offline. Showing cached stories.");
+          } else {
+            this.view.showErrorMessage("You are offline. Stories cannot be loaded right now.");
+          }
         } else {
           this.view.showErrorMessage("Error: Failed to fetch stories: " + error.message);
         }
