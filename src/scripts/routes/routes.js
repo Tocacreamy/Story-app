@@ -4,6 +4,7 @@ import Login from "../pages/login/login-page";
 import UploadStoryPage from "../pages/uploadStory/uploadStory-page";
 import DetailStory from "../pages/detailStory/detailStory-page";
 import NotificationsPage from "../pages/notifications/notifications-page.js";
+import SavedStoriesPage from "../pages/savedStories/savedStories-page.js";
 
 const routes = {
   "/": new HomePage(),
@@ -12,6 +13,7 @@ const routes = {
   "/register": new Register(),
   "/detail/:id": new DetailStory(),
   "/notifications": new NotificationsPage(),
+  "/saved-stories": new SavedStoriesPage(),
 };
 
 export default routes;

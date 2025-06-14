@@ -1,4 +1,4 @@
-import { saveStories, getCachedStories } from '../database.js';
+import { saveStories, getCachedStories, deleteStory } from '../database.js';
 
 class HomePresenter {
   constructor(view, model) {
@@ -15,40 +15,61 @@ class HomePresenter {
         this.view.navigateToLogin();
       });
 
-      let storiesToDisplay = [];
-
-      if (!navigator.onLine) {
-        // If offline, first try to get from cache immediately
-        const cachedStories = await getCachedStories();
-        if (cachedStories && cachedStories.length > 0) {
-          storiesToDisplay = cachedStories;
-          this.view.displayStories(storiesToDisplay);
-          this.view.showErrorMessage("You are offline. Showing cached stories.");
-          console.log('Cached stories attempted to display:', cachedStories);
-        } else {
-          this.view.showErrorMessage("You are offline. No cached stories available.");
-        }
-      }
-
-      // Always attempt to fetch from network (or update cache) when online or to get fresh data
-      try {
-        const networkStories = await this.model.getStories();
-        if (networkStories) {
-          storiesToDisplay = networkStories;
-          this.view.displayStories(storiesToDisplay); // Display fresh data
-          await saveStories(networkStories); // Update cache with fresh data
-          console.log("Stories fetched and updated in IndexedDB");
-        }
-      } catch (error) {
-        // If we are truly online and network fetch fails, show the error
-        // If offline, and we already showed cached stories, no need for another error.
-        if (navigator.onLine || (storiesToDisplay && storiesToDisplay.length === 0)) {
-          this.view.showErrorMessage("Error: Failed to fetch stories: " + error.message);
-        }
-        console.error("Error loading stories (network/cache fallback):");
-      }
+      await this._refreshStories();
+      this._setupStoryDeletion();
     } else {
       this.view.showLoginMessage();
+    }
+  }
+
+  async _refreshStories() {
+    if (!navigator.onLine) {
+      // If offline, try to load cached stories directly
+      const cachedStories = await getCachedStories();
+      if (cachedStories && cachedStories.length > 0) {
+        this.view.displayStories(cachedStories);
+        this.view.showErrorMessage("You are offline. Showing cached stories.");
+      } else {
+        this.view.showErrorMessage("You are offline. Stories cannot be loaded right now.");
+      }
+    } else {
+      // If online, try to fetch from network first, then fallback to cache
+      try {
+        const stories = await this.model.getStories();
+        this.view.displayStories(stories);
+        await saveStories(stories);
+        console.log("Stories saved to IndexedDB");
+      } catch (error) {
+        console.warn("Failed to fetch stories from network, attempting to load from cache:", error);
+        const cachedStories = await getCachedStories();
+        if (cachedStories && cachedStories.length > 0) {
+          this.view.displayStories(cachedStories);
+          this.view.showErrorMessage("Error: Failed to fetch stories from network. Showing cached stories.");
+        } else {
+          this.view.showErrorMessage("Error: Failed to fetch stories and no cached stories available: " + error.message);
+        }
+      }
+    }
+  }
+
+  _setupStoryDeletion() {
+    const storiesContainer = document.getElementById("stories-container");
+    if (storiesContainer) {
+      storiesContainer.addEventListener("click", async (event) => {
+        if (event.target.classList.contains("delete-story-btn")) {
+          const storyId = event.target.dataset.id;
+          if (confirm("Are you sure you want to delete this story?")) {
+            try {
+              await deleteStory(storyId);
+              console.log(`Story with ID ${storyId} deleted.`);
+              await this._refreshStories(); // Refresh the view after deletion
+            } catch (error) {
+              console.error("Error deleting story:", error);
+              this.view.showErrorMessage("Error: Failed to delete story: " + error.message);
+            }
+          }
+        }
+      });
     }
   }
 }

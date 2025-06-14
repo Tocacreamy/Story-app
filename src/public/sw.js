@@ -75,8 +75,9 @@ self.addEventListener("fetch", (event) => {
           }
           return networkResponse;
         }).catch(() => {
-          // Optionally, return a placeholder image here if desired for offline
+          // Return a transparent 1x1 pixel image or an empty response to prevent TypeError
           console.warn('Failed to fetch and cache image:', event.request.url);
+          return new Response('', { status: 404, statusText: 'Not Found' }); // Return a valid (empty) Response
         });
       })
     );

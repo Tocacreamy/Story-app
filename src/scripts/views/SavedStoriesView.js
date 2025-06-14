@@ -1,4 +1,4 @@
-class HomeView {
+class SavedStoriesView {
   constructor() {
     this.app = document.getElementById("app") || document.body;
   }
@@ -6,44 +6,19 @@ class HomeView {
   getTemplate() {
     return `
       <section class="container">
-        <h1>Beranda</h1>
-        <div id="auth-status"></div>
-        <div id="stories-container" class="stories-grid">
-          <p class="loading-text">Loading stories...</p>
+        <h1>Saved Stories</h1>
+        <div id="saved-stories-container" class="stories-grid">
+          <p class="loading-text">Loading saved stories...</p>
         </div>
       </section>
     `;
   }
 
-  showLoginMessage() {
-    const authStatus = document.getElementById("auth-status");
-    authStatus.innerHTML = `
-      <div class="auth-message">
-        <p>Please log in to view stories</p>
-        <a href="#/login" class="login-btn">Login</a>
-        <span>or</span>
-        <a href="#/register" class="register-btn">Register</a>
-      </div>
-    `;
-
-    document.getElementById("stories-container").innerHTML = "";
-  }
-
-  showAuthenticatedUser(userName) {
-    const authStatus = document.getElementById("auth-status");
-    authStatus.innerHTML = `
-      <div class="auth-message success">
-        <p>Welcome back, ${userName}!</p>
-        <button id="logout-btn" class="logout-btn">Logout</button>
-      </div>
-    `;
-  }
-
   displayStories(stories) {
-    const storiesContainer = document.getElementById("stories-container");
+    const storiesContainer = document.getElementById("saved-stories-container");
 
     if (stories.length === 0) {
-      storiesContainer.innerHTML = "<p>No stories found</p>";
+      storiesContainer.innerHTML = "<p>No saved stories found.</p>";
       return;
     }
 
@@ -80,23 +55,15 @@ class HomeView {
           `;
       })
       .join("");
+
+    // After displaying stories, attach event listeners for deletion
+    // this.bindDeleteStory(stories); // Remove this line
   }
 
   showErrorMessage(message) {
-    const storiesContainer = document.getElementById("stories-container");
+    const storiesContainer = document.getElementById("saved-stories-container");
     storiesContainer.innerHTML = `<p class="error-message">Error: ${message}</p>`;
-  }
-
-  bindLogoutButton(handler) {
-    const logoutBtn = document.getElementById("logout-btn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", handler);
-    }
-  }
-
-  navigateToLogin() {
-    window.location.hash = "#/login";
   }
 }
 
-export default HomeView;
+export default SavedStoriesView; 

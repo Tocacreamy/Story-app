@@ -4,6 +4,46 @@ import "../styles/main.css";
 import App from "./pages/app";
 import PushNotificationManager from "./utils/pushNotification.js";
 
+let deferredPrompt = null; // Initialize to null explicitly
+const installButton = document.getElementById('install-button');
+
+const setupInstallPrompt = () => {
+  console.log('setupInstallPrompt function called.');
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent the mini-infobar from appearing on mobile
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    console.log('beforeinstallprompt fired, deferredPrompt set:', deferredPrompt);
+    // Update UI to notify the user they can install the PWA
+    if (installButton) {
+      installButton.style.display = 'block';
+    }
+  });
+
+  if (installButton) {
+    installButton.addEventListener('click', async () => {
+      console.log('Install button clicked. deferredPrompt value:', deferredPrompt);
+      // Hide the app provided install promotion
+      if (installButton) {
+        installButton.style.display = 'none';
+      }
+      // Show the install prompt
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        const { outcome } = await deferredPrompt.userChoice;
+        // Optionally, send analytics event with outcome of user choice
+        console.log(`User response to the install prompt: ${outcome}`);
+        // We've used the prompt, and now it can't be used again, clear it
+        deferredPrompt = null;
+      } else {
+        console.warn('deferredPrompt is null, cannot show install prompt.');
+      }
+    });
+  }
+};
+
 function updateOnlineStatus() {
   const indicator = document.getElementById('offline-indicator');
   if (!navigator.onLine) {
@@ -20,6 +60,7 @@ window.addEventListener('offline', updateOnlineStatus);
 
 document.addEventListener("DOMContentLoaded", async () => {
   updateOnlineStatus();
+  setupInstallPrompt(); // Call the setup function
 
   const app = new App({
     content: document.querySelector("#main-content"),
