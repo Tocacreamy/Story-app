@@ -1,9 +1,24 @@
 const CACHE_NAME = "story-app-v1";
 const STATIC_CACHE = [
   "/",
+  "/index.html",
   "/scripts/index.js",
   "/styles/main.css",
+  "/styles/components.css",
+  "/styles/pages.css",
+  "/styles/layout.css",
+  "/styles/responsive.css",
+  "/styles/forms.css",
+  "/styles/base.css",
+  "/styles/transitions.css",
+  "/styles/notifications.css",
+  "/styles/accessibility.css",
+  "/styles/map.css",
+  "/styles/camera.css",
   "/favicon.png",
+  "/manifest.json",
+  "/icons/icon-192x192.png",
+  "/icons/icon-512x512.png"
 ];
 
 // Install event - cache static assets
@@ -42,18 +57,58 @@ self.addEventListener("activate", (event) => {
 
 // Fetch event - serve from cache when offline
 self.addEventListener("fetch", (event) => {
+  // Skip cross-origin requests
+  if (!event.request.url.startsWith(self.location.origin)) {
+    return;
+  }
+
+  // Handle API requests with NetworkFirst strategy
+  if (event.request.url.includes('/api/')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => {
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // Handle static assets with CacheFirst strategy
   event.respondWith(
-    caches
-      .match(event.request)
-      .then((response) => {
-        return response || fetch(event.request);
-      })
-      .catch(() => {
-        // Return offline page if available
-        if (event.request.destination === "document") {
-          return caches.match("/");
-        }
-      })
+    caches.match(event.request).then((response) => {
+      if (response) {
+        return response;
+      }
+
+      return fetch(event.request)
+        .then((response) => {
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+
+          return response;
+        })
+        .catch(() => {
+          // Return offline page for navigation requests
+          if (event.request.mode === 'navigate') {
+            return caches.match('/');
+          }
+          // Return a fallback for other requests
+          return new Response('Offline content not available');
+        });
+    })
   );
 });
 
