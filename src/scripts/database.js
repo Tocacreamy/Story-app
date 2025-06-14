@@ -38,4 +38,22 @@ export async function getCachedStories() {
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
   });
+}
+
+export async function deleteStory(id) {
+  console.log("Deleting story from database by ID:", id);
+  const db = await openDB();
+  const tx = db.transaction(STORE_NAME, 'readwrite');
+  const store = tx.objectStore(STORE_NAME);
+  store.delete(id);
+  return tx.complete || tx.done || tx;
+}
+
+export async function clearAllStories() {
+  console.log("Clearing all stories from database");
+  const db = await openDB();
+  const tx = db.transaction(STORE_NAME, 'readwrite');
+  const store = tx.objectStore(STORE_NAME);
+  store.clear();
+  return tx.complete || tx.done || tx;
 } 
