@@ -18,7 +18,8 @@ const STATIC_CACHE = [
   "/favicon.png",
   "/manifest.json",
   "/icons/icon-192x192.png",
-  "/icons/icon-512x512.png"
+  "/icons/icon-512x512.png",
+  "/offline.html"
 ];
 
 // Install event - cache static assets
@@ -44,8 +45,9 @@ self.addEventListener("activate", (event) => {
       .then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
-            if (cacheName !== CACHE_NAME) {
-              console.log("Service Worker: Deleting old cache");
+            // Exclude 'image-cache' from deletion if you want persistent image caching
+            if (cacheName !== CACHE_NAME && cacheName !== 'image-cache') {
+              console.log("Service Worker: Deleting old cache", cacheName);
               return caches.delete(cacheName);
             }
           })
@@ -57,12 +59,36 @@ self.addEventListener("activate", (event) => {
 
 // Fetch event - serve from cache when offline
 self.addEventListener("fetch", (event) => {
-  // Skip cross-origin requests
+  // Strategy for images (Cache First for speed, then network)
+  if (event.request.destination === 'image') {
+    event.respondWith(
+      caches.match(event.request).then((response) => {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clonedResponse = networkResponse.clone();
+            caches.open('image-cache').then((cache) => {
+              cache.put(event.request, clonedResponse);
+            });
+          }
+          return networkResponse;
+        }).catch(() => {
+          // Optionally, return a placeholder image here if desired for offline
+          console.warn('Failed to fetch and cache image:', event.request.url);
+        });
+      })
+    );
+    return; // Handled image request, exit listener
+  }
+
+  // Existing logic for skipping other cross-origin requests for non-images
   if (!event.request.url.startsWith(self.location.origin)) {
     return;
   }
 
-  // Handle API requests with NetworkFirst strategy
+  // Existing logic for API requests (NetworkFirst)
   if (event.request.url.includes('/api/')) {
     event.respondWith(
       fetch(event.request)
@@ -80,7 +106,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Handle static assets with CacheFirst strategy
+  // Existing logic for static assets (CacheFirst)
   event.respondWith(
     caches.match(event.request).then((response) => {
       if (response) {
@@ -92,18 +118,16 @@ self.addEventListener("fetch", (event) => {
           if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
           }
-
           const responseToCache = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
           });
-
           return response;
         })
         .catch(() => {
           // Return offline page for navigation requests
           if (event.request.mode === 'navigate') {
-            return caches.match('/');
+            return caches.match('/offline.html'); // Serve custom offline page
           }
           // Return a fallback for other requests
           return new Response('Offline content not available');
