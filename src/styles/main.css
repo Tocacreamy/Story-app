@@ -99,3 +99,28 @@ body.has-offline-indicator {
   content: "🌐"; /* Unicode character for a globe or simple icon */
   object-fit: contain; /* Ensure the icon fits */
 }
+
+.delete-story-btn {
+  background-color: #dc3545; /* A standard red for delete actions */
+  color: white;
+  border: none;
+  padding: 8px 14px; /* Slightly increased padding */
+  border-radius: 5px; /* Slightly more rounded */
+  cursor: pointer;
+  font-size: 0.875rem; /* Slightly larger font */
+  font-weight: 600; /* Bolder text */
+  margin-left: 0.5rem;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
+
+.delete-story-btn:hover {
+  background-color: #c82333;
+  transform: translateY(-1px); /* Slight lift on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* More prominent shadow on hover */
+}
+
+.delete-story-btn:active {
+  transform: translateY(0); /* Press down effect on click */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}

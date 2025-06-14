@@ -1,4 +1,4 @@
-import { saveStories, getCachedStories, deleteStory } from '../database.js';
+import { saveStories, getCachedStories } from '../database.js';
 
 class HomePresenter {
   constructor(view, model) {
@@ -16,7 +16,6 @@ class HomePresenter {
       });
 
       await this._refreshStories();
-      this._setupStoryDeletion();
     } else {
       this.view.showLoginMessage();
     }
@@ -49,27 +48,6 @@ class HomePresenter {
           this.view.showErrorMessage("Error: Failed to fetch stories and no cached stories available: " + error.message);
         }
       }
-    }
-  }
-
-  _setupStoryDeletion() {
-    const storiesContainer = document.getElementById("stories-container");
-    if (storiesContainer) {
-      storiesContainer.addEventListener("click", async (event) => {
-        if (event.target.classList.contains("delete-story-btn")) {
-          const storyId = event.target.dataset.id;
-          if (confirm("Are you sure you want to delete this story?")) {
-            try {
-              await deleteStory(storyId);
-              console.log(`Story with ID ${storyId} deleted.`);
-              await this._refreshStories(); // Refresh the view after deletion
-            } catch (error) {
-              console.error("Error deleting story:", error);
-              this.view.showErrorMessage("Error: Failed to delete story: " + error.message);
-            }
-          }
-        }
-      });
     }
   }
 }

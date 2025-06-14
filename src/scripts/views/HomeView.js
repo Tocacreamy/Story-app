@@ -71,10 +71,7 @@ class HomeView {
                   <span class="story-date">${createdDate}</span>
                 </div>
                 <p class="story-desc">${story.description}</p>
-                <div class="story-actions">
-                  <a href="#/detail/${story.id}" class="read-more" aria-label="Read more about ${story.name}'s story">Read More</a>
-                  <button class="delete-story-btn" data-id="${story.id}" aria-label="Delete ${story.name}'s story">Delete</button>
-                </div>
+                <a href="#/detail/${story.id}" class="read-more" aria-label="Read more about ${story.name}'s story">Read More</a>
               </div>
             </div>
           `;
