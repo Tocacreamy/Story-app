@@ -10,12 +10,14 @@
 @import "accessibility.css";
 @import "notifications.css";
 
+/* HAPUS atau KOMENTARI BLOK INI karena kita akan menggunakan versi kelas */
+/*
 #offline-indicator {
   width: 100%;
   background: #ff4d4f;
   color: #fff;
   text-align: center;
-  padding: 8px 0;
+  padding: 0px 0;
   font-weight: 500;
   position: fixed;
   top: 0;
@@ -24,30 +26,59 @@
   letter-spacing: 1px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-body.has-offline-indicator {
-  padding-top: 40px; /* adjust if needed */
-}
+*/
 
+/* HAPUS atau KOMENTARI BLOK INI jika Anda tidak ingin body bergeser */
+/*
+body.has-offline-indicator {
+  padding-top: 40px; 
+}
+*/
+
+/* PERBAIKAN untuk .offline-indicator */
 .offline-indicator {
-  display: flex;
+  display: none; /* Defaultnya disembunyikan, diatur oleh JS */
   align-items: center;
-  background: #ff4d4f;
+  justify-content: center; /* Memastikan teks di tengah jika ada padding horizontal */
+  background: #ff4d4f; /* Warna merah yang lebih standar untuk offline/error */
   color: #fff;
-  padding: 4px 12px;
+  padding: 8px 15px; /* Padding yang konsisten atas/bawah dan kiri/kanan */
   border-radius: 4px;
   font-weight: 500;
-  font-size: 0.95rem;
-  margin-left: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  height: 32px;
+  font-size: 0.875rem; /* Sedikit lebih kecil dan umum */
+  text-align: center; /* Untuk fallback jika flex tidak didukung (jarang) */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* Shadow yang lebih halus */
+
+  /* Positioning di dalam header */
+  position: absolute; /* Relatif terhadap .main-header */
+  top: 10px; /* Jarak dari atas .main-header */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999; /* Pastikan di atas elemen lain di header */
+  width: auto; /* Lebar menyesuaikan konten */
+  min-width: 150px; /* Lebar minimum agar tidak terlalu sempit */
+}
+
+/* Pastikan .main-header memiliki position: relative */
+.main-header {
+  position: relative; /* Diperlukan untuk positioning absolut .offline-indicator */
+  /* ... existing styles for .main-header ... */
 }
 
 @media (max-width: 600px) {
   .offline-indicator {
-    font-size: 0.85rem;
-    padding: 2px 8px;
-    height: 28px;
-    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    min-width: 120px;
+    /* Jika ingin full width di layar kecil dan menempel di atas:
+    top: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+    transform: translateX(0);
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    */
   }
 }
 
@@ -110,7 +141,8 @@ body.has-offline-indicator {
   font-size: 0.875rem; /* Slightly larger font */
   font-weight: 600; /* Bolder text */
   margin-left: 0.5rem;
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
 }
 
