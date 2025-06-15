@@ -16,7 +16,7 @@ class LoginView {
                 <div class="password-input-container">
                   <input type="password" id="password" name="password" placeholder="Enter your password" required>
                   <button type="button" id="toggle-password" class="toggle-password" aria-label="Show password">
-                    <img src="images/visible.svg" alt="show password icon">
+                    <img src="${import.meta.env.BASE_URL}images/visible.svg" alt="show password icon">
                   </button>
                 </div>
               </div>
@@ -71,11 +71,11 @@ class LoginView {
     togglePasswordButton.addEventListener("click", () => {
       if (passwordInput.type === "password") {
         passwordInput.type = "text";
-        togglePasswordButton.innerHTML = `<img src="images/visible_off.svg" alt="hide password icon">`;
+        togglePasswordButton.innerHTML = `<img src="${import.meta.env.BASE_URL}images/visible_off.svg" alt="hide password icon">`;
         togglePasswordButton.setAttribute("aria-label", "Hide password");
       } else {
         passwordInput.type = "password";
-        togglePasswordButton.innerHTML = `<img src="images/visible.svg" alt="show password icon">`;
+        togglePasswordButton.innerHTML = `<img src="${import.meta.env.BASE_URL}images/visible.svg" alt="show password icon">`;
         togglePasswordButton.setAttribute("aria-label", "Show password");
       }
     });

@@ -31,7 +31,7 @@ export default class PushNotificationManager {
 
     try {
       // Register service worker
-      const registration = await navigator.serviceWorker.register("/sw.js");
+      const registration = await navigator.serviceWorker.register(import.meta.env.BASE_URL + "sw.js");
       console.log("Service Worker registered:", registration);
 
       // Wait for service worker to be ready
