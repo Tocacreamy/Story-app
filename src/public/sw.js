@@ -8,26 +8,26 @@ const { CacheableResponsePlugin } = workbox.cacheableResponse;
 
 // Precache static assets
 precacheAndRoute([
-  { url: '/', revision: '1' },
-  { url: '/index.html', revision: '1' },
-  { url: '/scripts/index.js', revision: '1' },
-  { url: '/styles/main.css', revision: '1' },
-  { url: '/styles/components.css', revision: '1' },
-  { url: '/styles/pages.css', revision: '1' },
-  { url: '/styles/layout.css', revision: '1' },
-  { url: '/styles/responsive.css', revision: '1' },
-  { url: '/styles/forms.css', revision: '1' },
-  { url: '/styles/base.css', revision: '1' },
-  { url: '/styles/transitions.css', revision: '1' },
-  { url: '/styles/notifications.css', revision: '1' },
-  { url: '/styles/accessibility.css', revision: '1' },
-  { url: '/styles/map.css', revision: '1' },
-  { url: '/styles/camera.css', revision: '1' },
-  { url: '/favicon.png', revision: '1' },
-  { url: '/manifest.json', revision: '1' },
-  { url: '/icons/icon-192x192.png', revision: '1' },
-  { url: '/icons/icon-512x512.png', revision: '1' },
-  { url: '/offline.html', revision: '1' }
+  { url: '/Story-app/', revision: '1' },
+  { url: '/Story-app/index.html', revision: '1' },
+  { url: '/Story-app/scripts/index.js', revision: '1' },
+  { url: '/Story-app/styles/main.css', revision: '1' },
+  { url: '/Story-app/styles/components.css', revision: '1' },
+  { url: '/Story-app/styles/pages.css', revision: '1' },
+  { url: '/Story-app/styles/layout.css', revision: '1' },
+  { url: '/Story-app/styles/responsive.css', revision: '1' },
+  { url: '/Story-app/styles/forms.css', revision: '1' },
+  { url: '/Story-app/styles/base.css', revision: '1' },
+  { url: '/Story-app/styles/transitions.css', revision: '1' },
+  { url: '/Story-app/styles/notifications.css', revision: '1' },
+  { url: '/Story-app/styles/accessibility.css', revision: '1' },
+  { url: '/Story-app/styles/map.css', revision: '1' },
+  { url: '/Story-app/styles/camera.css', revision: '1' },
+  { url: '/Story-app/favicon.png', revision: '1' },
+  { url: '/Story-app/manifest.json', revision: '1' },
+  { url: '/Story-app/icons/icon-192x192.png', revision: '1' },
+  { url: '/Story-app/icons/icon-512x512.png', revision: '1' },
+  { url: '/Story-app/offline.html', revision: '1' }
 ]);
 
 // Cache images with a Cache First strategy
@@ -101,10 +101,10 @@ self.addEventListener('push', (event) => {
     title: 'Story App',
     options: {
       body: 'You have a new notification',
-      icon: '/favicon.png',
-      badge: '/favicon.png',
+      icon: '/Story-app/favicon.png',
+      badge: '/Story-app/favicon.png',
       tag: 'story-notification',
-      data: { url: '/' },
+      data: { url: '/Story-app/' },
     },
   };
 
@@ -124,7 +124,7 @@ self.addEventListener('push', (event) => {
             {
               action: 'view',
               title: 'View Stories',
-              icon: '/favicon.png',
+              icon: '/Story-app/favicon.png',
             },
             {
               action: 'dismiss',
@@ -132,7 +132,7 @@ self.addEventListener('push', (event) => {
             },
           ],
           data: {
-            url: pushData.options?.url || '/',
+            url: pushData.options?.url || '/Story-app/',
             timestamp: Date.now(),
           },
         },
@@ -159,7 +159,7 @@ self.addEventListener('notificationclick', (event) => {
     return;
   }
 
-  const urlToOpen = event.notification.data?.url || '/';
+  const urlToOpen = event.notification.data?.url || '/Story-app/';
 
   event.waitUntil(
     clients
