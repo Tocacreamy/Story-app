@@ -11,6 +11,7 @@ export default class UploadStoryPage {
     this.mapHandler = new MapHandler();
     this.cameraHandler = new CameraHandler();
     this.presenter = null;
+    console.log("UploadStoryPage initialized");
   }
 
   async render() {
