@@ -20,7 +20,7 @@ class RegisterView {
               <div class="password-input-container">
                 <input type="password" id="password" name="password" placeholder="Create a password" required minlength="8">
                 <button type="button" id="toggle-password" class="toggle-password" aria-label="Show password">
-                  <img src="public/images/visible.svg" alt="show password icon">
+                  <img src="/images/visible.svg" alt="show password icon">
                 </button>
               </div>
               <small class="password-requirements">Minimum 8 characters with uppercase, lowercase, and numbers</small>
@@ -81,11 +81,11 @@ class RegisterView {
     togglePasswordButton.addEventListener("click", () => {
       if (passwordInput.type === "password") {
         passwordInput.type = "text";
-        togglePasswordButton.innerHTML = `<img src="public/images/visible_off.svg" alt="hide password icon">`;
+        togglePasswordButton.innerHTML = `<img src="/images/visible_off.svg" alt="hide password icon">`;
         togglePasswordButton.setAttribute("aria-label", "Hide password");
       } else {
         passwordInput.type = "password";
-        togglePasswordButton.innerHTML = `<img src="public/images/visible.svg" alt="show password icon">`;
+        togglePasswordButton.innerHTML = `<img src="/images/visible.svg" alt="show password icon">`;
         togglePasswordButton.setAttribute("aria-label", "Show password");
       }
     });
