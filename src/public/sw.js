@@ -1,154 +1,110 @@
-const CACHE_NAME = "story-app-v1";
-const STATIC_CACHE = [
-  "/",
-  "/index.html",
-  "/scripts/index.js",
-  "/styles/main.css",
-  "/styles/components.css",
-  "/styles/pages.css",
-  "/styles/layout.css",
-  "/styles/responsive.css",
-  "/styles/forms.css",
-  "/styles/base.css",
-  "/styles/transitions.css",
-  "/styles/notifications.css",
-  "/styles/accessibility.css",
-  "/styles/map.css",
-  "/styles/camera.css",
-  "/favicon.png",
-  "/manifest.json",
-  "/icons/icon-192x192.png",
-  "/icons/icon-512x512.png",
-  "/offline.html"
-];
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.4.1/workbox-sw.js');
 
-// Install event - cache static assets
-self.addEventListener("install", (event) => {
-  console.log("Service Worker: Install event");
-  event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => {
-        console.log("Service Worker: Caching files");
-        return cache.addAll(STATIC_CACHE);
+const { registerRoute } = workbox.routing;
+const { CacheFirst, NetworkFirst, StaleWhileRevalidate } = workbox.strategies;
+const { precacheAndRoute } = workbox.precaching;
+const { ExpirationPlugin } = workbox.expiration;
+const { CacheableResponsePlugin } = workbox.cacheableResponse;
+
+// Precache static assets
+precacheAndRoute([
+  { url: '/', revision: '1' },
+  { url: '/index.html', revision: '1' },
+  { url: '/scripts/index.js', revision: '1' },
+  { url: '/styles/main.css', revision: '1' },
+  { url: '/styles/components.css', revision: '1' },
+  { url: '/styles/pages.css', revision: '1' },
+  { url: '/styles/layout.css', revision: '1' },
+  { url: '/styles/responsive.css', revision: '1' },
+  { url: '/styles/forms.css', revision: '1' },
+  { url: '/styles/base.css', revision: '1' },
+  { url: '/styles/transitions.css', revision: '1' },
+  { url: '/styles/notifications.css', revision: '1' },
+  { url: '/styles/accessibility.css', revision: '1' },
+  { url: '/styles/map.css', revision: '1' },
+  { url: '/styles/camera.css', revision: '1' },
+  { url: '/favicon.png', revision: '1' },
+  { url: '/manifest.json', revision: '1' },
+  { url: '/icons/icon-192x192.png', revision: '1' },
+  { url: '/icons/icon-512x512.png', revision: '1' },
+  { url: '/offline.html', revision: '1' }
+]);
+
+// Cache images with a Cache First strategy
+registerRoute(
+  ({ request }) => request.destination === 'image',
+  new CacheFirst({
+    cacheName: 'images',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200]
+      }),
+      new ExpirationPlugin({
+        maxEntries: 60,
+        maxAgeSeconds: 30 * 24 * 60 * 60 // 30 Days
       })
-      .then(() => self.skipWaiting())
-  );
-});
+    ]
+  })
+);
 
-// Activate event - clean up old caches
-self.addEventListener("activate", (event) => {
-  console.log("Service Worker: Activate event");
-  event.waitUntil(
-    caches
-      .keys()
-      .then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => {
-            // Exclude 'image-cache' from deletion if you want persistent image caching
-            if (cacheName !== CACHE_NAME && cacheName !== 'image-cache') {
-              console.log("Service Worker: Deleting old cache", cacheName);
-              return caches.delete(cacheName);
-            }
-          })
-        );
+// Cache CSS, JavaScript, and Web Worker files with a Stale While Revalidate strategy
+registerRoute(
+  ({ request }) =>
+    request.destination === 'style' ||
+    request.destination === 'script' ||
+    request.destination === 'worker',
+  new StaleWhileRevalidate({
+    cacheName: 'static-resources',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200]
       })
-      .then(() => self.clients.claim())
-  );
-});
+    ]
+  })
+);
 
-// Fetch event - serve from cache when offline
-self.addEventListener("fetch", (event) => {
-  // Strategy for images (Cache First for speed, then network)
-  if (event.request.destination === 'image') {
-    event.respondWith(
-      caches.match(event.request).then((response) => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request).then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const clonedResponse = networkResponse.clone();
-            caches.open('image-cache').then((cache) => {
-              cache.put(event.request, clonedResponse);
-            });
-          }
-          return networkResponse;
-        }).catch(() => {
-          // Return a transparent 1x1 pixel image or an empty response to prevent TypeError
-          console.warn('Failed to fetch and cache image:', event.request.url);
-          return new Response('', { status: 404, statusText: 'Not Found' }); // Return a valid (empty) Response
-        });
+// Cache API requests with a Network First strategy
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/api/'),
+  new NetworkFirst({
+    cacheName: 'api-cache',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200]
+      }),
+      new ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 5 * 60 // 5 minutes
       })
-    );
-    return; // Handled image request, exit listener
-  }
+    ]
+  })
+);
 
-  // Existing logic for skipping other cross-origin requests for non-images
-  if (!event.request.url.startsWith(self.location.origin)) {
-    return;
-  }
+// Handle navigation requests with a Network First strategy
+registerRoute(
+  ({ request }) => request.mode === 'navigate',
+  new NetworkFirst({
+    cacheName: 'pages',
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200]
+      })
+    ]
+  })
+);
 
-  // Existing logic for API requests (NetworkFirst)
-  if (event.request.url.includes('/api/')) {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
-          return response;
-        })
-        .catch(() => {
-          return caches.match(event.request);
-        })
-    );
-    return;
-  }
-
-  // Existing logic for static assets (CacheFirst)
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      if (response) {
-        return response;
-      }
-
-      return fetch(event.request)
-        .then((response) => {
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-          return response;
-        })
-        .catch(() => {
-          // Return offline page for navigation requests
-          if (event.request.mode === 'navigate') {
-            return caches.match('/offline.html'); // Serve custom offline page
-          }
-          // Return a fallback for other requests
-          return new Response('Offline content not available');
-        });
-    })
-  );
-});
-
-// Push event - handle incoming push notifications
-self.addEventListener("push", (event) => {
-  console.log("Service Worker: Push event received");
+// Push notification event handler
+self.addEventListener('push', (event) => {
+  console.log('Service Worker: Push event received');
 
   let notificationData = {
-    title: "Story App",
+    title: 'Story App',
     options: {
-      body: "You have a new notification",
-      icon: "/favicon.png",
-      badge: "/favicon.png",
-      tag: "story-notification",
-      data: { url: "/" },
+      body: 'You have a new notification',
+      icon: '/favicon.png',
+      badge: '/favicon.png',
+      tag: 'story-notification',
+      data: { url: '/' },
     },
   };
 
@@ -161,29 +117,29 @@ self.addEventListener("push", (event) => {
           body: pushData.options?.body || notificationData.options.body,
           icon: pushData.options?.icon || notificationData.options.icon,
           badge: pushData.options?.badge || notificationData.options.badge,
-          tag: "story-notification",
+          tag: 'story-notification',
           renotify: true,
           requireInteraction: true,
           actions: [
             {
-              action: "view",
-              title: "View Stories",
-              icon: "/favicon.png",
+              action: 'view',
+              title: 'View Stories',
+              icon: '/favicon.png',
             },
             {
-              action: "dismiss",
-              title: "Dismiss",
+              action: 'dismiss',
+              title: 'Dismiss',
             },
           ],
           data: {
-            url: pushData.options?.url || "/",
+            url: pushData.options?.url || '/',
             timestamp: Date.now(),
           },
         },
       };
     }
   } catch (error) {
-    console.error("Service Worker: Error parsing push data:", error);
+    console.error('Service Worker: Error parsing push data:', error);
   }
 
   event.waitUntil(
@@ -194,24 +150,24 @@ self.addEventListener("push", (event) => {
   );
 });
 
-// Notification click event - handle user interaction
-self.addEventListener("notificationclick", (event) => {
-  console.log("Service Worker: Notification click event");
+// Notification click event handler
+self.addEventListener('notificationclick', (event) => {
+  console.log('Service Worker: Notification click event');
   event.notification.close();
 
-  if (event.action === "dismiss") {
+  if (event.action === 'dismiss') {
     return;
   }
 
-  const urlToOpen = event.notification.data?.url || "/";
+  const urlToOpen = event.notification.data?.url || '/';
 
   event.waitUntil(
     clients
-      .matchAll({ type: "window", includeUncontrolled: true })
+      .matchAll({ type: 'window', includeUncontrolled: true })
       .then((clientList) => {
         // Check if app is already open
         for (const client of clientList) {
-          if (client.url.includes(urlToOpen) && "focus" in client) {
+          if (client.url.includes(urlToOpen) && 'focus' in client) {
             return client.focus();
           }
         }

@@ -27,7 +27,7 @@ class HomePresenter {
       const cachedStories = await getCachedStories();
       if (cachedStories && cachedStories.length > 0) {
         this.view.displayStories(cachedStories);
-        this.view.showErrorMessage("You are offline..");
+        this.view.showErrorMessage("You are offline. Go to Saved Stories to view them.");
       } else {
         this.view.showErrorMessage("You are offline. Stories cannot be loaded right now.");
       }

@@ -33,20 +33,22 @@ class UploadStoryView {
             </div>
             
             <div class="form-group">
-              <label for="location">Add Location</label>
-              <div class="location-input-container">
-                <div class="location-buttons">
-                  <button type="button" id="get-location" class="location-button" aria-describedby="location-help">Get My Location</button>
-                  <button type="button" id="reset-location" class="location-button reset-location" aria-controls="location-status">Reset Location</button>
+              <fieldset>
+                <legend>Location</legend>
+                <div class="location-input-container">
+                  <div class="location-buttons">
+                    <button type="button" id="get-location" class="location-button" aria-describedby="location-help">Get My Location</button>
+                    <button type="button" id="reset-location" class="location-button reset-location" aria-controls="location-status">Reset Location</button>
+                  </div>
+                  <p id="location-help" class="visually-hidden">This will use your device's geolocation to determine your current coordinates</p>
+                  <div id="location-status" class="location-status" aria-live="polite">No location selected</div>
+                  <div id="map-section" class="map-section">
+                    <div id="location-map" class="location-map" aria-label="Map to select location"></div>
+                  </div>
+                  <input type="hidden" id="latitude" name="latitude">
+                  <input type="hidden" id="longitude" name="longitude">
                 </div>
-                <p id="location-help" class="visually-hidden">This will use your device's geolocation to determine your current coordinates</p>
-                <div id="location-status" class="location-status" aria-live="polite">No location selected</div>
-                <div id="map-section" class="map-section">
-                  <div id="location-map" class="location-map" aria-label="Map to select location"></div>
-                </div>
-                <input type="hidden" id="latitude" name="latitude">
-                <input type="hidden" id="longitude" name="longitude">
-              </div>
+              </fieldset>
             </div>
             
             <div class="form-group">
